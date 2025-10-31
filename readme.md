@@ -1,0 +1,1 @@
+# managemet of innovation
