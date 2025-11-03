@@ -2018,7 +2018,7 @@
                 // 6. 로그아웃 (페이지 새로고침)
                 setTimeout(() => {
                     location.reload();
-                }, 500);
+                }, 3000); // 500ms는 5개 파일 다운로드에 너무 짧으므로 3초로 늘림
 
             } catch (error) {
                 console.error("Error exporting data:", error);
@@ -2094,4 +2094,5 @@
     </script>
 </body>
 </html>
+
 
