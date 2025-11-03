@@ -509,51 +509,52 @@
     </div>
 
 <script type="module">
+innovation_system.html 파일의 <script type="module"> 태그 내부 전체를 아래 코드로 교체하세요.
+
+--- [아래 코드를 복사하여 붙여넣기] ---
+
 // Firebase SDK v11.6.1
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { 
-    getAuth, 
-    signInAnonymously, 
-    signInWithCustomToken, 
-    onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { 
-    getFirestore, 
-    doc, 
-    getDoc, 
-    addDoc, 
-    setDoc, 
-    updateDoc, 
-    deleteDoc, 
-    onSnapshot, 
-    collection, 
-    query, 
-    where, 
-    getDocs,
-    writeBatch,
-    setLogLevel
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { initializeApp, getApps, getApp } from "https://www.google.com/search?q=https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+import {
+getAuth,
+signInAnonymously,
+signInWithCustomToken,
+onAuthStateChanged
+} from "https://www.google.com/search?q=https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import {
+getFirestore,
+doc,
+getDoc,
+addDoc,
+setDoc,
+updateDoc,
+deleteDoc,
+onSnapshot,
+collection,
+query,
+where,
+getDocs,
+writeBatch,
+setLogLevel
+} from "https://www.google.com/search?q=https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // --- [수정 필요 1] Firebase 설정 교체 ---
 // 1. (필수) 본인의 Firebase 프로젝트 설정 값으로 교체하세요.
 // (Firebase 콘솔 -> 프로젝트 설정 -> '내 앱'에서 확인)
 const firebaseConfig = {
-  apiKey: "AIzaSyCgs9ShUfkruf9On4QGBg3i-YC3jkRoBNQ",
-  authDomain: "managemet-f5ccc.firebaseapp.com",
-  projectId: "managemet-f5ccc",
-  storageBucket: "managemet-f5ccc.firebasestorage.app",
-  messagingSenderId: "490248835901",
-  appId: "1:490248835901:web:4d86f4d060a2618684ab54",
-  measurementId: "G-MW8TZK1873"
+apiKey: "YOUR_API_KEY", // "AIza..."
+authDomain: "https://www.google.com/search?q=YOUR-PROJECT-ID.firebaseapp.com",
+projectId: "YOUR-PROJECT-ID",
+storageBucket: "https://www.google.com/search?q=YOUR-PROJECT-ID.appspot.com",
+messagingSenderId: "YOUR_SENDER_ID",
+appId: "YOUR_APP_ID" // "1:..."
 };
 
 // 2. (필수) appId를 본인의 프로젝트 ID로 설정합니다.
-const appId = 1:490248835901:web:4d86f4d060a2618684ab54;
+const appId = firebaseConfig.projectId;
 // --- [수정 필요 1] 여기까지 ---
 
-
 // --- 전역 변수 ---
-// const appId = ... (이 줄은 위로 이동)
 let db, auth, userId;
 let unsubscribeProjects = null;
 let unsubscribeBelts = null;
@@ -562,14 +563,13 @@ let localBeltsCache = []; // 로컬 캐시 (필터링된 데이터)
 
 // 담당자-법인 매핑
 const userCorporationMap = {
-    '김현진': 'ATEC',
-    '이찬영': 'ATEC MOBILITY',
-    '정운수': 'ATEC C&',
-    '이상영': 'ATEC SYSTEM',
-    '김보람': 'ATEC COMPUTER',
-    '강상순': 'ATEC auto'
+'김현진': 'ATEC',
+'이찬영': 'ATEC MOBILITY',
+'정운수': 'ATEC C&',
+'이상영': 'ATEC SYSTEM',
+'김보람': 'ATEC COMPUTER',
+'강상순': 'ATEC auto'
 };
-
 
 // --- 0. 로그인 및 권한 ---
 let currentUserRole = null; // 'admin' 또는 'user'
@@ -577,1158 +577,1199 @@ let currentUserCorporation = null; // 'admin'은 null, 'user'는 법인명
 
 // 메인 앱 시작
 function startMainApp() {
-    // 1. 로그인 화면 숨기기
-    document.getElementById('role-selection-overlay').style.display = 'none';
-    
-    // 2. 메인 앱 보이기
-    document.getElementById('main-app-container').classList.remove('hidden');
-    
-    // 3. Firebase 초기화 시작 (로그인 후에 시작)
-    initializeFirebase();
+// 1. 로그인 화면 숨기기
+document.getElementById('role-selection-overlay').style.display = 'none';
+
+// 2. 메인 앱 보이기
+document.getElementById('main-app-container').classList.remove('hidden');
+
+// 3. Firebase 초기화 시작 (로그인 후에 시작)
+initializeFirebase();
+
+
 }
 
 // 관리자 로그인 처리
 function handleAdminLogin(e) {
-    e.preventDefault();
-    const id = document.getElementById('admin-id').value;
-    const password = document.getElementById('admin-password').value;
-    const errorEl = document.getElementById('admin-login-error');
+e.preventDefault();
+const id = document.getElementById('admin-id').value;
+const password = document.getElementById('admin-password').value;
+const errorEl = document.getElementById('admin-login-error');
 
-    // 하드코딩된 아이디와 패스워드 검증
-    if (id === 'admin' && password === '$atec@1993$') {
-        errorEl.textContent = '';
-        closeModalFromButton('admin-login-modal');
-        
-        currentUserRole = 'admin';
-        currentUserCorporation = null;
-        document.getElementById('app-subtitle').textContent += " (관리자 모드)";
-        
-        startMainApp();
-    } else {
-        errorEl.textContent = '아이디 또는 패스워드가 잘못되었습니다.';
-    }
+// 하드코딩된 아이디와 패스워드 검증
+if (id === 'admin' && password === '$atec@1993$') {
+    errorEl.textContent = '';
+    closeModalFromButton('admin-login-modal');
+    
+    currentUserRole = 'admin';
+    currentUserCorporation = null;
+    document.getElementById('app-subtitle').textContent += " (관리자 모드)";
+    
+    startMainApp();
+} else {
+    errorEl.textContent = '아이디 또는 패스워드가 잘못되었습니다.';
+}
+
+
 }
 
 // 담당자 로그인 처리
 function handleUserLogin(e) {
-    e.preventDefault();
-    const userName = document.getElementById('user-name-select').value;
-    const errorEl = document.getElementById('user-login-error');
+e.preventDefault();
+const userName = document.getElementById('user-name-select').value;
+const errorEl = document.getElementById('user-login-error');
 
-    if (userName && userCorporationMap[userName]) {
-        errorEl.textContent = '';
-        closeModalFromButton('user-login-modal');
-        
-        currentUserRole = 'user';
-        currentUserCorporation = userCorporationMap[userName];
-        document.getElementById('app-subtitle').textContent += ` (담당자: ${userName} - ${currentUserCorporation})`;
-        
-        startMainApp();
-    } else {
-        errorEl.textContent = '유효한 담당자를 선택하세요.';
-    }
+if (userName && userCorporationMap[userName]) {
+    errorEl.textContent = '';
+    closeModalFromButton('user-login-modal');
+    
+    currentUserRole = 'user';
+    currentUserCorporation = userCorporationMap[userName];
+    document.getElementById('app-subtitle').textContent += ` (담당자: ${userName} - ${currentUserCorporation})`;
+    
+    startMainApp();
+} else {
+    errorEl.textContent = '유효한 담당자를 선택하세요.';
+}
+
+
 }
 
 // 관리자 UI 토글 (시뮬레이션 버튼)
 function toggleAdminUI() {
-    const adminControls = document.getElementById('admin-only-controls');
-    if (!adminControls) return;
+const adminControls = document.getElementById('admin-only-controls');
+if (!adminControls) return;
 
-    if (currentUserRole === 'admin') {
-        adminControls.classList.remove('hidden');
-    } else {
-        adminControls.classList.add('hidden');
-    }
+if (currentUserRole === 'admin') {
+    adminControls.classList.remove('hidden');
+} else {
+    adminControls.classList.add('hidden');
 }
 
 
+}
+
 // --- [수정 필요 2] 컬렉션 경로 단순화 ---
-// (권장) Firebase 경로를 단순화합니다.
+// (권장) Firebase 경로를 단순화합니다. (3단계의 보안 규칙과 일치시킴)
 const getProjectsCol = () => collection(db, 'projects');
 const getBeltsCol = () => collection(db, 'belts');
 // --- [수정 필요 2] 여기까지 ---
 
-
 // --- Firebase 초기화 및 인증 ---
 async function initializeFirebase() {
-    try {
-        // const firebaseConfig = ... (이 줄은 위에서 정의됨)
-        
-        let app;
-        if (getApps().length === 0) {
-            app = initializeApp(firebaseConfig);
-        } else {
-            app = getApp(); 
-        }
+try {
+// const firebaseConfig = ... (이 줄은 위에서 정의됨)
 
-        db = getFirestore(app);
-        auth = getAuth(app);
-        setLogLevel('Debug'); 
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log("Firebase Auth: User is signed in.", user.uid);
-                userId = user.uid;
-            } else {
-                console.log("Firebase Auth: User is signed out. Attempting sign-in...");
-                await signIn();
-            }
-            setupListeners();
-        });
-
-        await signIn();
-
-    } catch (error)
-    {
-        console.error("Firebase initialization error:", error);
-        document.body.innerHTML = `<div class="p-8 text-red-600">Firebase 초기화에 실패했습니다. 관리자에게 문의하세요. 오류: ${error.message}</div>`;
+    let app;
+    if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp(); 
     }
+
+    db = getFirestore(app);
+    auth = getAuth(app);
+    setLogLevel('Debug'); 
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            console.log("Firebase Auth: User is signed in.", user.uid);
+            userId = user.uid;
+        } else {
+            console.log("Firebase Auth: User is signed out. Attempting sign-in...");
+            await signIn();
+        }
+        // onAuthStateChanged가 setupListeners를 호출하도록 보장
+        if (!unsubscribeProjects) { // 리스너가 아직 설정되지 않았다면 설정
+            setupListeners();
+        }
+    });
+
+    await signIn();
+
+} catch (error)
+{
+    console.error("Firebase initialization error:", error);
+    document.body.innerHTML = `<div class="p-8 text-red-600">Firebase 초기화에 실패했습니다. 관리자에게 문의하세요. 오류: ${error.message}</div>`;
+}
+
+
 }
 
 async function signIn() {
-    try {
-        // [수정] Canvas에서 제공하는 __initial_auth_token은 더 이상 없으므로,
-        // '익명' 로그인을 기본으로 사용합니다.
-        // (1단계에서 Firebase '익명' 로그인을 활성화해야 합니다.)
-        console.log("Attempting sign in anonymously...");
-        await signInAnonymously(auth);
+try {
+// [수정] Canvas에서 제공하는 __initial_auth_token은 더 이상 없으므로,
+// '익명' 로그인을 기본으로 사용합니다.
+// (1단계에서 Firebase '익명' 로그인을 활성화해야 합니다.)
+console.log("Attempting sign in anonymously...");
+await signInAnonymously(auth);
 
-    } catch (error) {
-        console.error("Firebase sign-in error:", error);
-    }
+} catch (error) {
+    console.error("Firebase sign-in error:", error);
 }
 
-// --- [이후 코드는 수정 필요 없음] ---
+
+}
 
 // --- 데이터 리스너 설정 (권한별 필터링 적용) ---
 function setupListeners() {
-    // ... (이하 모든 JavaScript 코드는 기존 innovation_system.html 파일과 동일)
-    // ...
-    if (!db || !auth.currentUser) {
-        console.log("Firestore or Auth not ready, delaying listeners.");
-        return;
-    }
-
-    console.log(`Setting up Firestore listeners for role: ${currentUserRole}, corp: ${currentUserCorporation}`);
-    
-    document.getElementById('app-id-display').textContent = appId;
-    
-    toggleAdminUI(); // 시뮬레이션 버튼 숨김/표시
-
-    // 1. 과제 쿼리 (권한별 분기)
-    let projectsQuery;
-    if (currentUserRole === 'admin') {
-        projectsQuery = getProjectsCol(); // 관리자: 전체 조회
-    } else {
-        projectsQuery = query(getProjectsCol(), where("corporation", "==", currentUserCorporation)); // 담당자: 법인별 필터링
-    }
-    
-    if (unsubscribeProjects) unsubscribeProjects(); 
-    unsubscribeProjects = onSnapshot(projectsQuery, (snapshot) => {
-        console.log(`Projects snapshot received: ${snapshot.size} docs`);
-        localProjectsCache = []; // 로컬 캐시 업데이트
-        snapshot.forEach(doc => {
-            localProjectsCache.push({ id: doc.id, ...doc.data() });
-        });
-        localProjectsCache.sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff));
-        
-        loadProjectsTable(localProjectsCache);
-        loadSummaryDashboard(localProjectsCache); 
-    }, (error) => {
-        console.error("Error listening to projects:", error);
-    });
-
-    // 2. 벨트 쿼리 (권한별 분기)
-    let beltsQuery;
-    if (currentUserRole === 'admin') {
-        beltsQuery = getBeltsCol(); // 관리자: 전체 조회
-    } else {
-        beltsQuery = query(getBeltsCol(), where("corporation", "==", currentUserCorporation)); // 담당자: 법인별 필터링
-    }
-
-    if (unsubscribeBelts) unsubscribeBelts(); 
-    unsubscribeBelts = onSnapshot(beltsQuery, (snapshot) => {
-        console.log(`Belts snapshot received: ${snapshot.size} docs`);
-        localBeltsCache = []; // 로컬 캐시 업데이트
-        snapshot.forEach(doc => {
-            localBeltsCache.push({ id: doc.id, ...doc.data() });
-        });
-        
-        loadBeltSummary(localBeltsCache); 
-    }, (error) => {
-        console.error("Error listening to belts:", error);
-    });
+if (!db || !auth.currentUser) {
+console.log("Firestore or Auth not ready, delaying listeners.");
+return;
 }
 
+console.log(`Setting up Firestore listeners for role: ${currentUserRole}, corp: ${currentUserCorporation}`);
+
+document.getElementById('app-id-display').textContent = appId;
+
+toggleAdminUI(); // 시뮬레이션 버튼 숨김/표시
+
+// 1. 과제 쿼리 (권한별 분기)
+let projectsQuery;
+if (currentUserRole === 'admin') {
+    projectsQuery = getProjectsCol(); // 관리자: 전체 조회
+} else {
+    projectsQuery = query(getProjectsCol(), where("corporation", "==", currentUserCorporation)); // 담당자: 법인별 필터링
+}
+
+if (unsubscribeProjects) unsubscribeProjects(); 
+unsubscribeProjects = onSnapshot(projectsQuery, (snapshot) => {
+    console.log(`Projects snapshot received: ${snapshot.size} docs`);
+    localProjectsCache = []; // 로컬 캐시 업데이트
+    snapshot.forEach(doc => {
+        localProjectsCache.push({ id: doc.id, ...doc.data() });
+    });
+    localProjectsCache.sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff));
+    
+    loadProjectsTable(localProjectsCache);
+    loadSummaryDashboard(localProjectsCache); 
+}, (error) => {
+    console.error("Error listening to projects:", error);
+});
+
+// 2. 벨트 쿼리 (권한별 분기)
+let beltsQuery;
+if (currentUserRole === 'admin') {
+    beltsQuery = getBeltsCol(); // 관리자: 전체 조회
+} else {
+    beltsQuery = query(getBeltsCol(), where("corporation", "==", currentUserCorporation)); // 담당자: 법인별 필터링
+}
+
+if (unsubscribeBelts) unsubscribeBelts(); 
+unsubscribeBelts = onSnapshot(beltsQuery, (snapshot) => {
+    console.log(`Belts snapshot received: ${snapshot.size} docs`);
+    localBeltsCache = []; // 로컬 캐시 업데이트
+    snapshot.forEach(doc => {
+        localBeltsCache.push({ id: doc.id, ...doc.data() });
+    });
+    
+    loadBeltSummary(localBeltsCache); 
+}, (error) => {
+    console.error("Error listening to belts:", error);
+});
+
+
+}
 
 // --- 1. 과제 운영 (프로젝트) ---
 
 // 과제 테이블 로드
 function loadProjectsTable(projects) {
-    const tableBody = document.getElementById('projects-table-body');
-    if (projects.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="11" class="px-4 py-4 text-center text-gray-500">등록된 과제가 없습니다.</td></tr>`;
-        return;
-    }
+const tableBody = document.getElementById('projects-table-body');
+if (projects.length === 0) {
+tableBody.innerHTML = <tr><td colspan="11" class="px-4 py-4 text-center text-gray-500">등록된 과제가 없습니다.</td></tr>;
+return;
+}
 
-    tableBody.innerHTML = ''; 
+tableBody.innerHTML = ''; 
+
+projects.forEach((project, index) => {
+    const row = document.createElement('tr');
     
-    projects.forEach((project, index) => {
-        const row = document.createElement('tr');
-        
-        const dmaicValues = [
-            parseFloat(project.dmaic_d || 0),
-            parseFloat(project.dmaic_m || 0),
-            parseFloat(project.dmaic_a || 0),
-            parseFloat(project.dmaic_i || 0),
-            parseFloat(project.dmaic_c || 0)
-        ];
-        const progress = dmaicValues.reduce((sum, val) => sum + val, 0) / 5;
-        const progressPercent = (progress * 100).toFixed(0);
+    const dmaicValues = [
+        parseFloat(project.dmaic_d || 0),
+        parseFloat(project.dmaic_m || 0),
+        parseFloat(project.dmaic_a || 0),
+        parseFloat(project.dmaic_i || 0),
+        parseFloat(project.dmaic_c || 0)
+    ];
+    const progress = dmaicValues.reduce((sum, val) => sum + val, 0) / 5;
+    const progressPercent = (progress * 100).toFixed(0);
 
-        const progressBarHTML = `
-            <div class="relative w-full bg-gray-200 rounded-full h-2.5">
-                <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
-            </div>
-            <div class="text-xs text-right text-gray-600 mt-1">${progressPercent}%</div>
-        `;
-        
-        row.innerHTML = `
-            <td class="px-4 py-3 whitespace-nowrap">${index + 1}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.corporation || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.team || 'N/A'}</td>
-            <td class="px-4 py-3">${project.name || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.leader || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.kickoff || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.type || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-semibold">${project.grade || 'N/A'}</td>
-            <td class="px-4 py-3 whitespace-nowrap">${project.status || 'N/A'}</td>
-            <td class="px-4 py-3">${progressBarHTML}</td>
-            <td class="px-4 py-3 whitespace-nowrap">
-                <button class="text-blue-600 hover:text-blue-800" data-id="${project.id}">수정</button>
-                <button class="text-red-600 hover:text-red-800 ml-2" data-id="${project.id}">삭제</button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+    const progressBarHTML = `
+        <div class="relative w-full bg-gray-200 rounded-full h-2.5">
+            <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${progressPercent}%"></div>
+        </div>
+        <div class="text-xs text-right text-gray-600 mt-1">${progressPercent}%</div>
+    `;
+    
+    row.innerHTML = `
+        <td class="px-4 py-3 whitespace-nowrap">${index + 1}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.corporation || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.team || 'N/A'}</td>
+        <td class="px-4 py-3">${project.name || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.leader || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.kickoff || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.type || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap font-semibold">${project.grade || 'N/A'}</td>
+        <td class="px-4 py-3 whitespace-nowrap">${project.status || 'N/A'}</td>
+        <td class="px-4 py-3">${progressBarHTML}</td>
+        <td class="px-4 py-3 whitespace-nowrap">
+            <button class="text-blue-600 hover:text-blue-800" data-id="${project.id}">수정</button>
+            <button class="text-red-600 hover:text-red-800 ml-2" data-id="${project.id}">삭제</button>
+        </td>
+    `;
+    tableBody.appendChild(row);
+});
 
-    tableBody.querySelectorAll('button[data-id]').forEach(button => {
-        button.addEventListener('click', async (e) => {
-            const id = e.target.dataset.id;
-            if (e.target.textContent === '수정') {
-                await openEditProjectModal(id);
-            } else if (e.target.textContent === '삭제') {
-                await deleteProject(id);
-            }
-        });
+tableBody.querySelectorAll('button[data-id]').forEach(button => {
+    button.addEventListener('click', async (e) => {
+        const id = e.target.dataset.id;
+        if (e.target.textContent === '수정') {
+            await openEditProjectModal(id);
+        } else if (e.target.textContent === '삭제') {
+            await deleteProject(id);
+        }
     });
+});
+
+
 }
 
 // 과제 저장 (신규/수정) - DMAIC 계층 로직 적용
 async function saveProject(e) {
-    e.preventDefault();
-    const id = document.getElementById('project-id').value;
-    
-    let status = document.getElementById('project-status').value;
-    const dmaic_d_val = parseFloat(document.getElementById('dmaic-d').value || 0);
-    const dmaic_m_val = parseFloat(document.getElementById('dmaic-m').value || 0);
-    const dmaic_a_val = parseFloat(document.getElementById('dmaic-a').value || 0);
-    const dmaic_i_val = parseFloat(document.getElementById('dmaic-i').value || 0);
-    const dmaic_c_val = parseFloat(document.getElementById('dmaic-c').value || 0);
+e.preventDefault();
+const id = document.getElementById('project-id').value;
 
-    let alertMessage = "";
+let status = document.getElementById('project-status').value;
+const dmaic_d_val = parseFloat(document.getElementById('dmaic-d').value || 0);
+const dmaic_m_val = parseFloat(document.getElementById('dmaic-m').value || 0);
+const dmaic_a_val = parseFloat(document.getElementById('dmaic-a').value || 0);
+const dmaic_i_val = parseFloat(document.getElementById('dmaic-i').value || 0);
+const dmaic_c_val = parseFloat(document.getElementById('dmaic-c').value || 0);
 
-    // 1. '완료' 유효성 검사 (저장 차단)
-    if (status === '완료') {
-        if (dmaic_d_val !== 1.0 || dmaic_m_val !== 1.0 || dmaic_a_val !== 1.0 || dmaic_i_val !== 1.0 || dmaic_c_val !== 1.0) {
-            showAlertModal("'완료' 상태로 저장하려면 모든 DMAIC 단계가 100% (1.0)여야 합니다. (저장 차단됨)");
-            return;
-        }
-    } 
-    // 2. '관리' 유효성 검사 (자동 조정)
-    else if (status === '관리') {
-        if (dmaic_i_val !== 1.0) {
-            alertMessage = "'관리' 단계는 '개선(I)'이 100% 완료되어야 합니다. '현재 상황'을 '개선'으로 자동 조정합니다.";
-            status = '개선';
-        }
-    } 
-    // 3. '개선' 유효성 검사 (자동 조정)
-    else if (status === '개선') {
-        if (dmaic_a_val !== 1.0) {
-            alertMessage = "'개선' 단계는 '분석(A)'이 100% 완료되어야 합니다. '현재 상황'을 '분석'으로 자동 조정합니다.";
-            status = '분석';
-        }
-    } 
-    // 4. '분석' 유효성 검사 (자동 조정)
-    else if (status === '분석') {
-        if (dmaic_m_val !== 1.0) {
-            alertMessage = "'분석' 단계는 '측정(M)'이 100% 완료되어야 합니다. '현재 상황'을 '측정'으로 자동 조정합니다.";
-            status = '측정';
-        }
-    } 
-    // 5. '측정' 유효성 검사 (자동 조정)
-    else if (status === '측정') {
-        if (dmaic_d_val !== 1.0) {
-            alertMessage = "'측정' 단계는 '정의(D)'가 100% 완료되어야 합니다. '현재 상황'을 '정의'로 자동 조정합니다.";
-            status = '정의';
-        }
-    }
+let alertMessage = "";
 
-    if (alertMessage) {
-        showAlertModal(alertMessage);
-        document.getElementById('project-status').value = status;
-    }
-    
-    const projectType = document.getElementById('project-type').value;
-    let grade = null;
-
-    const scores = [
-        parseInt(document.getElementById('score-potential').value),
-        parseInt(document.getElementById('score-strategy').value),
-        parseInt(document.getElementById('score-effect').value),
-        parseInt(document.getElementById('score-ripple').value),
-        parseInt(document.getElementById('score-feasibility').value),
-        parseInt(document.getElementById('score-urgency').value)
-    ];
-    const totalScore = scores.reduce((sum, val) => sum + val, 0);
-    grade = calculateGrade(totalScore);
-
-    const projectData = {
-        corporation: document.getElementById('project-corporation').value,
-        department: document.getElementById('project-department').value,
-        team: document.getElementById('project-team').value,
-        name: document.getElementById('project-name').value,
-        leader: document.getElementById('project-leader').value,
-        members: document.getElementById('project-members').value,
-        kickoff: document.getElementById('project-kickoff').value,
-        type: projectType,
-        status: status,
-        dmaic_d: dmaic_d_val,
-        dmaic_m: dmaic_m_val,
-        dmaic_a: dmaic_a_val,
-        dmaic_i: dmaic_i_val,
-        dmaic_c: dmaic_c_val,
-        score_potential: scores[0],
-        score_strategy: scores[1],
-        score_effect: scores[2],
-        score_ripple: scores[3],
-        score_feasibility: scores[4],
-        score_urgency: scores[5],
-        score_total: totalScore,
-        grade: grade, 
-    };
-    
-    // 담당자가 자기 법인이 아닌 과제를 등록/수정하려 할 때 방지
-    if (currentUserRole === 'user' && projectData.corporation !== currentUserCorporation) {
-        showAlertModal(`담당자 모드에서는 소속 법인(${currentUserCorporation})의 과제만 등록/수정할 수 있습니다.`);
-        document.getElementById('project-corporation').value = currentUserCorporation;
+// 1. '완료' 유효성 검사 (저장 차단)
+if (status === '완료') {
+    if (dmaic_d_val !== 1.0 || dmaic_m_val !== 1.0 || dmaic_a_val !== 1.0 || dmaic_i_val !== 1.0 || dmaic_c_val !== 1.0) {
+        showAlertModal("'완료' 상태로 저장하려면 모든 DMAIC 단계가 100% (1.0)여야 합니다. (저장 차단됨)");
         return;
     }
-
-
-    try {
-        if (id) {
-            const docRef = doc(db, getProjectsCol().path, id);
-            await updateDoc(docRef, projectData);
-        } else {
-            await addDoc(getProjectsCol(), projectData);
-        }
-        closeModalFromButton('project-modal');
-    } catch (error) {
-        console.error("Error saving project:", error);
-        showAlertModal(`저장 중 오류가 발생했습니다: ${error.message}`);
+} 
+// 2. '관리' 유효성 검사 (자동 조정)
+else if (status === '관리') {
+    if (dmaic_i_val !== 1.0) {
+        alertMessage = "'관리' 단계는 '개선(I)'이 100% 완료되어야 합니다. '현재 상황'을 '개선'으로 자동 조정합니다.";
+        status = '개선';
+    }
+} 
+// 3. '개선' 유효성 검사 (자동 조정)
+else if (status === '개선') {
+    if (dmaic_a_val !== 1.0) {
+        alertMessage = "'개선' 단계는 '분석(A)'이 100% 완료되어야 합니다. '현재 상황'을 '분석'으로 자동 조정합니다.";
+        status = '분석';
+    }
+} 
+// 4. '분석' 유효성 검사 (자동 조정)
+else if (status === '분석') {
+    if (dmaic_m_val !== 1.0) {
+        alertMessage = "'분석' 단계는 '측정(M)'이 100% 완료되어야 합니다. '현재 상황'을 '측정'으로 자동 조정합니다.";
+        status = '측정';
+    }
+} 
+// 5. '측정' 유효성 검사 (자동 조정)
+else if (status === '측정') {
+    if (dmaic_d_val !== 1.0) {
+        alertMessage = "'측정' 단계는 '정의(D)'가 100% 완료되어야 합니다. '현재 상황'을 '정의'로 자동 조정합니다.";
+        status = '정의';
     }
 }
 
+if (alertMessage) {
+    showAlertModal(alertMessage);
+    document.getElementById('project-status').value = status;
+}
+
+const projectType = document.getElementById('project-type').value;
+let grade = null;
+
+const scores = [
+    parseInt(document.getElementById('score-potential').value),
+    parseInt(document.getElementById('score-strategy').value),
+    parseInt(document.getElementById('score-effect').value),
+    parseInt(document.getElementById('score-ripple').value),
+    parseInt(document.getElementById('score-feasibility').value),
+    parseInt(document.getElementById('score-urgency').value)
+];
+const totalScore = scores.reduce((sum, val) => sum + val, 0);
+grade = calculateGrade(totalScore);
+
+const projectData = {
+    corporation: document.getElementById('project-corporation').value,
+    department: document.getElementById('project-department').value,
+    team: document.getElementById('project-team').value,
+    name: document.getElementById('project-name').value,
+    leader: document.getElementById('project-leader').value,
+    members: document.getElementById('project-members').value,
+    kickoff: document.getElementById('project-kickoff').value,
+    type: projectType,
+    status: status,
+    dmaic_d: dmaic_d_val,
+    dmaic_m: dmaic_m_val,
+    dmaic_a: dmaic_a_val,
+    dmaic_i: dmaic_i_val,
+    dmaic_c: dmaic_c_val,
+    score_potential: scores[0],
+    score_strategy: scores[1],
+    score_effect: scores[2],
+    score_ripple: scores[3],
+    score_feasibility: scores[4],
+    score_urgency: scores[5],
+    score_total: totalScore,
+    grade: grade, 
+};
+
+// 담당자가 자기 법인이 아닌 과제를 등록/수정하려 할 때 방지
+if (currentUserRole === 'user' && projectData.corporation !== currentUserCorporation) {
+    showAlertModal(`담당자 모드에서는 소속 법인(${currentUserCorporation})의 과제만 등록/수정할 수 있습니다.`);
+    document.getElementById('project-corporation').value = currentUserCorporation;
+    return;
+}
+
+
+try {
+    if (id) {
+        const docRef = doc(db, getProjectsCol().path, id);
+        await updateDoc(docRef, projectData);
+    } else {
+        await addDoc(getProjectsCol(), projectData);
+    }
+    closeModalFromButton('project-modal');
+} catch (error) {
+    console.error("Error saving project:", error);
+    showAlertModal(`저장 중 오류가 발생했습니다: ${error.message}`);
+}
+
+
+}
 
 // 과제 삭제
 async function deleteProject(id) {
-    try {
-        const docRef = doc(db, getProjectsCol().path, id);
-        await deleteDoc(docRef);
-    } catch (error) {
-        console.error("Error deleting project:", error);
-        showAlertModal(`삭제 중 오류가 발생했습니다: ${error.message}`);
-    }
+try {
+const docRef = doc(db, getProjectsCol().path, id);
+await deleteDoc(docRef);
+} catch (error) {
+console.error("Error deleting project:", error);
+showAlertModal(삭제 중 오류가 발생했습니다: ${error.message});
+}
 }
 
 // 신규 과제 모달 열기
 document.getElementById('new-project-btn').addEventListener('click', () => {
-    document.getElementById('project-form').reset(); 
-    document.getElementById('project-id').value = '';
-    document.getElementById('project-modal-title').textContent = '신규 과제 등록';
-    
-    // 담당자 모드일 경우 법인명 자동 선택 및 고정
-    if (currentUserRole === 'user') {
-        document.getElementById('project-corporation').value = currentUserCorporation;
-        document.getElementById('project-corporation').disabled = true;
-    } else {
-        document.getElementById('project-corporation').disabled = false;
-    }
+document.getElementById('project-form').reset();
+document.getElementById('project-id').value = '';
+document.getElementById('project-modal-title').textContent = '신규 과제 등록';
 
-    toggleValiditySection(); 
-    openModal('project-modal');
+// 담당자 모드일 경우 법인명 자동 선택 및 고정
+if (currentUserRole === 'user') {
+    document.getElementById('project-corporation').value = currentUserCorporation;
+    document.getElementById('project-corporation').disabled = true;
+} else {
+    document.getElementById('project-corporation').disabled = false;
+}
+
+toggleValiditySection(); 
+openModal('project-modal');
+
+
 });
 
 // 과제 수정 모달 열기
 async function openEditProjectModal(id) {
-    try {
-        const docRef = doc(db, getProjectsCol().path, id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            document.getElementById('project-id').value = id;
-            document.getElementById('project-modal-title').textContent = '과제 수정';
-            
-            document.getElementById('project-corporation').value = data.corporation || '';
-            document.getElementById('project-department').value = data.department || '';
-            document.getElementById('project-team').value = data.team || '';
-            document.getElementById('project-name').value = data.name || '';
-            document.getElementById('project-leader').value = data.leader || '';
-            document.getElementById('project-members').value = data.members || '';
-            document.getElementById('project-kickoff').value = data.kickoff || '';
-            document.getElementById('project-type').value = data.type || '';
-            document.getElementById('project-status').value = data.status || '미실행';
+try {
+const docRef = doc(db, getProjectsCol().path, id);
+const docSnap = await getDoc(docRef);
+if (docSnap.exists()) {
+const data = docSnap.data();
+document.getElementById('project-id').value = id;
+document.getElementById('project-modal-title').textContent = '과제 수정';
 
-            document.getElementById('dmaic-d').value = data.dmaic_d || 0;
-            document.getElementById('dmaic-m').value = data.dmaic_m || 0;
-            document.getElementById('dmaic-a').value = data.dmaic_a || 0;
-            document.getElementById('dmaic-i').value = data.dmaic_i || 0;
-            document.getElementById('dmaic-c').value = data.dmaic_c || 0;
+        document.getElementById('project-corporation').value = data.corporation || '';
+        document.getElementById('project-department').value = data.department || '';
+        document.getElementById('project-team').value = data.team || '';
+        document.getElementById('project-name').value = data.name || '';
+        document.getElementById('project-leader').value = data.leader || '';
+        document.getElementById('project-members').value = data.members || '';
+        document.getElementById('project-kickoff').value = data.kickoff || '';
+        document.getElementById('project-type').value = data.type || '';
+        document.getElementById('project-status').value = data.status || '미실행';
 
-            document.getElementById('score-potential').value = data.score_potential || 1;
-            document.getElementById('score-strategy').value = data.score_strategy || 1;
-            document.getElementById('score-effect').value = data.score_effect || 1;
-            document.getElementById('score-ripple').value = data.score_ripple || 1;
-            document.getElementById('score-feasibility').value = data.score_feasibility || 1;
-            document.getElementById('score-urgency').value = data.score_urgency || 1;
-            
-            // 담당자 모드일 경우 법인명 고정
-            if (currentUserRole === 'user') {
-                document.getElementById('project-corporation').disabled = true;
-            } else {
-                document.getElementById('project-corporation').disabled = false;
-            }
-            
-            toggleValiditySection(); 
-            openModal('project-modal');
+        document.getElementById('dmaic-d').value = data.dmaic_d || 0;
+        document.getElementById('dmaic-m').value = data.dmaic_m || 0;
+        document.getElementById('dmaic-a').value = data.dmaic_a || 0;
+        document.getElementById('dmaic-i').value = data.dmaic_i || 0;
+        document.getElementById('dmaic-c').value = data.dmaic_c || 0;
+
+        document.getElementById('score-potential').value = data.score_potential || 1;
+        document.getElementById('score-strategy').value = data.score_strategy || 1;
+        document.getElementById('score-effect').value = data.score_effect || 1;
+        document.getElementById('score-ripple').value = data.score_ripple || 1;
+        document.getElementById('score-feasibility').value = data.score_feasibility || 1;
+        document.getElementById('score-urgency').value = data.score_urgency || 1;
+        
+        // 담당자 모드일 경우 법인명 고정
+        if (currentUserRole === 'user') {
+            document.getElementById('project-corporation').disabled = true;
+        } else {
+            document.getElementById('project-corporation').disabled = false;
         }
-    } catch (error) {
-        console.error("Error fetching project for edit:", error);
-        showAlertModal(`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`);
+        
+        toggleValiditySection(); 
+        openModal('project-modal');
     }
+} catch (error) {
+    console.error("Error fetching project for edit:", error);
+    showAlertModal(`데이터를 불러오는 중 오류가 발생했습니다: ${error.message}`);
+}
+
+
 }
 
 // 과제 종류(type) 선택 시 타당성 평가 섹션 토글
 document.getElementById('project-type').addEventListener('change', toggleValiditySection);
 
 function toggleValiditySection() {
-    const projectType = document.getElementById('project-type').value;
-    const section = document.getElementById('validity-score-section');
-    if (projectType) {
-        section.classList.remove('hidden');
-    } else {
-        section.classList.add('hidden');
-    }
+const projectType = document.getElementById('project-type').value;
+const section = document.getElementById('validity-score-section');
+if (projectType) {
+section.classList.remove('hidden');
+} else {
+section.classList.add('hidden');
+}
 }
 
 // 과제 등급 계산
 function calculateGrade(score) {
-    if (score >= 51) return 'A';
-    if (score >= 45) return 'B';
-    if (score >= 39) return 'C';
-    return 'D';
+if (score >= 51) return 'A';
+if (score >= 45) return 'B';
+if (score >= 39) return 'C';
+return 'D';
 }
-
 
 // --- 2. 법인별 요약 (대시보드) ---
 
 // 집계 로직 (권한별 필터링 적용)
 function getProjectSummaryStats(projects) {
-    const allCorporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
-    // 관리자면 전체 법인, 담당자면 자기 법인만
-    const corporations = (currentUserRole === 'admin') ? allCorporations : [currentUserCorporation];
+const allCorporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
+// 관리자면 전체 법인, 담당자면 자기 법인만
+const corporations = (currentUserRole === 'admin') ? allCorporations : [currentUserCorporation];
 
-    let stats = {};
-    let totals = { "6σ": 0, "6S": 0, "R&D": 0, "AI": 0, total: 0, score: 0 };
+let stats = {};
+let totals = { "6σ": 0, "6S": 0, "R&D": 0, "AI": 0, total: 0, score: 0 };
 
-    corporations.forEach(corp => {
-        stats[corp] = { "6σ": 0, "6S": 0, "R&D": 0, "AI": 0, total: 0, score: 0 };
-    });
+corporations.forEach(corp => {
+    stats[corp] = { "6σ": 0, "6S": 0, "R&D": 0, "AI": 0, total: 0, score: 0 };
+});
 
-    // 'projects'는 이미 리스너 레벨에서 필터링됨
-    projects.forEach(p => {
-        if (stats[p.corporation]) {
-            let score = 0;
-            switch(p.type) {
-                case '6σ':
-                    stats[p.corporation]["6σ"]++;
-                    score = 3;
-                    break;
-                case '6S':
-                    stats[p.corporation]["6S"]++;
-                    score = 1;
-                    break;
-                case 'R&D':
-                    stats[p.corporation]["R&D"]++;
-                    score = 3;
-                    break;
-                case 'AI':
-                    stats[p.corporation]["AI"]++;
-                    score = 3; 
-                    break;
-            }
-            stats[p.corporation].total++;
-            stats[p.corporation].score += score;
+// 'projects'는 이미 리스너 레벨에서 필터링됨
+projects.forEach(p => {
+    if (stats[p.corporation]) {
+        let score = 0;
+        switch(p.type) {
+            case '6σ':
+                stats[p.corporation]["6σ"]++;
+                score = 3;
+                break;
+            case '6S':
+                stats[p.corporation]["6S"]++;
+                score = 1;
+                break;
+            case 'R&D':
+                stats[p.corporation]["R&D"]++;
+                score = 3;
+                break;
+            case 'AI':
+                stats[p.corporation]["AI"]++;
+                score = 3; 
+                break;
         }
-    });
+        stats[p.corporation].total++;
+        stats[p.corporation].score += score;
+    }
+});
 
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        totals["6σ"] += data["6σ"];
-        totals["6S"] += data["6S"];
-        totals["R&D"] += data["R&D"];
-        totals["AI"] += data["AI"];
-        totals.total += data.total;
-        totals.score += data.score;
-    });
+corporations.forEach(corp => {
+    const data = stats[corp];
+    totals["6σ"] += data["6σ"];
+    totals["6S"] += data["6S"];
+    totals["R&D"] += data["R&D"];
+    totals["AI"] += data["AI"];
+    totals.total += data.total;
+    totals.score += data.score;
+});
 
-    return { stats, totals, corporations };
+return { stats, totals, corporations };
+
+
 }
 
 function loadSummaryDashboard(projects) {
-    const tableBody = document.getElementById('summary-table-body');
-    const { stats, totals, corporations } = getProjectSummaryStats(projects);
+const tableBody = document.getElementById('summary-table-body');
+const { stats, totals, corporations } = getProjectSummaryStats(projects);
 
-    tableBody.innerHTML = ''; 
-    
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="px-4 py-3 whitespace-nowrap text-left font-semibold">${corp}</td>
-            <td class="px-4 py-3">${data["6σ"]}</td>
-            <td class="px-4 py-3">${data["6S"]}</td>
-            <td class="px-4 py-3">${data["R&D"]}</td>
-            <td class="px-4 py-3">${data["AI"]}</td>
-            <td class="px-4 py-3 font-semibold">${data.total}</td>
-            <td class="px-4 py-3 font-semibold text-blue-700">${data.score}</td>
-        `;
-        tableBody.appendChild(row);
-    });
+tableBody.innerHTML = ''; 
 
-    // 합계 행 (td에 font-bold 추가)
-    const totalRow = document.createElement('tr');
-    totalRow.className = "bg-gray-100 text-gray-900"; 
-    totalRow.innerHTML = `
-        <td class="px-4 py-3 text-left font-bold">합계</td>
-        <td class="px-4 py-3 font-bold">${totals["6σ"]}</td>
-        <td class="px-4 py-3 font-bold">${totals["6S"]}</td>
-        <td class="px-4 py-3 font-bold">${totals["R&D"]}</td>
-        <td class="px-4 py-3 font-bold">${totals["AI"]}</td>
-        <td class="px-4 py-3 font-bold">${totals.total}</td>
-        <td class="px-4 py-3 font-bold text-blue-900">${totals.score}</td>
+corporations.forEach(corp => {
+    const data = stats[corp];
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="px-4 py-3 whitespace-nowrap text-left font-semibold">${corp}</td>
+        <td class="px-4 py-3">${data["6σ"]}</td>
+        <td class="px-4 py-3">${data["6S"]}</td>
+        <td class="px-4 py-3">${data["R&D"]}</td>
+        <td class="px-4 py-3">${data["AI"]}</td>
+        <td class="px-4 py-3 font-semibold">${data.total}</td>
+        <td class="px-4 py-3 font-semibold text-blue-700">${data.score}</td>
     `;
-    tableBody.appendChild(totalRow);
-}
+    tableBody.appendChild(row);
+});
 
+// 합계 행 (td에 font-bold 추가)
+const totalRow = document.createElement('tr');
+totalRow.className = "bg-gray-100 text-gray-900"; 
+totalRow.innerHTML = `
+    <td class="px-4 py-3 text-left font-bold">합계</td>
+    <td class="px-4 py-3 font-bold">${totals["6σ"]}</td>
+    <td class="px-4 py-3 font-bold">${totals["6S"]}</td>
+    <td class="px-4 py-3 font-bold">${totals["R&D"]}</td>
+    <td class="px-4 py-3 font-bold">${totals["AI"]}</td>
+    <td class="px-4 py-3 font-bold">${totals.total}</td>
+    <td class="px-4 py-3 font-bold text-blue-900">${totals.score}</td>
+`;
+tableBody.appendChild(totalRow);
+
+
+}
 
 // --- 3. 벨트 요약 (인원) ---
 
 // 집계 로직 (권한별 필터링 적용)
 function getBeltSummaryStats(belts) {
-    const allCorporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
-    // 관리자면 전체 법인, 담당자면 자기 법인만
-    const corporations = (currentUserRole === 'admin') ? allCorporations : [currentUserCorporation];
-    
-    let stats = {};
-    let totals = { MBB: 0, BB: 0, GB: 0, AI: 0, total: 0 };
+const allCorporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
+// 관리자면 전체 법인, 담당자면 자기 법인만
+const corporations = (currentUserRole === 'admin') ? allCorporations : [currentUserCorporation];
 
-    corporations.forEach(corp => {
-        stats[corp] = { MBB: 0, BB: 0, GB: 0, AI: 0, total: 0 };
-    });
+let stats = {};
+let totals = { MBB: 0, BB: 0, GB: 0, AI: 0, total: 0 };
 
-    // 'belts'는 이미 리스너 레벨에서 필터링됨
-    belts.forEach(p => {
-        if (stats[p.corporation]) {
-            if (stats[p.corporation][p.grade] !== undefined) {
-                stats[p.corporation][p.grade]++;
-                stats[p.corporation].total++;
-            }
+corporations.forEach(corp => {
+    stats[corp] = { MBB: 0, BB: 0, GB: 0, AI: 0, total: 0 };
+});
+
+// 'belts'는 이미 리스너 레벨에서 필터링됨
+belts.forEach(p => {
+    if (stats[p.corporation]) {
+        if (stats[p.corporation][p.grade] !== undefined) {
+            stats[p.corporation][p.grade]++;
+            stats[p.corporation].total++;
         }
-    });
+    }
+});
 
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        totals.MBB += data.MBB;
-        totals.BB += data.BB;
-        totals.GB += data.GB;
-        totals.AI += data.AI;
-        totals.total += data.total;
-    });
+corporations.forEach(corp => {
+    const data = stats[corp];
+    totals.MBB += data.MBB;
+    totals.BB += data.BB;
+    totals.GB += data.GB;
+    totals.AI += data.AI;
+    totals.total += data.total;
+});
 
-    return { stats, totals, corporations };
+return { stats, totals, corporations };
+
+
 }
 
 function loadBeltSummary(belts) {
-    const tableBody = document.getElementById('belt-summary-table-body');
-    const { stats, totals, corporations } = getBeltSummaryStats(belts);
+const tableBody = document.getElementById('belt-summary-table-body');
+const { stats, totals, corporations } = getBeltSummaryStats(belts);
 
-    tableBody.innerHTML = ''; 
-    
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td class="px-4 py-3 whitespace-nowrap text-left font-semibold">${corp}</td>
-            <td class="px-4 py-3">${data.MBB}</td>
-            <td class="px-4 py-3">${data.BB}</td>
-            <td class="px-4 py-3">${data.GB}</td>
-            <td class="px-4 py-3">${data.AI}</td>
-            <td class="px-4 py-3 font-semibold text-blue-700">${data.total}</td>
-        `;
-        tableBody.appendChild(row);
-    });
+tableBody.innerHTML = ''; 
 
-    // 합계 행 (td에 font-bold 추가)
-    const totalRow = document.createElement('tr');
-    totalRow.className = "bg-gray-100 text-gray-900"; 
-    totalRow.innerHTML = `
-        <td class="px-4 py-3 text-left font-bold">합계</td>
-        <td class="px-4 py-3 font-bold">${totals.MBB}</td>
-        <td class="px-4 py-3 font-bold">${totals.BB}</td>
-        <td class="px-4 py-3 font-bold">${totals.GB}</td>
-        <td class="px-4 py-3 font-bold">${totals.AI}</td>
-        <td class="px-4 py-3 font-bold text-blue-900">${totals.total}</td>
+corporations.forEach(corp => {
+    const data = stats[corp];
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td class="px-4 py-3 whitespace-nowrap text-left font-semibold">${corp}</td>
+        <td class="px-4 py-3">${data.MBB}</td>
+        <td class="px-4 py-3">${data.BB}</td>
+        <td class="px-4 py-3">${data.GB}</td>
+        <td class="px-4 py-3">${data.AI}</td>
+        <td class="px-4 py-3 font-semibold text-blue-700">${data.total}</td>
     `;
-    tableBody.appendChild(totalRow);
+    tableBody.appendChild(row);
+});
+
+// 합계 행 (td에 font-bold 추가)
+const totalRow = document.createElement('tr');
+totalRow.className = "bg-gray-100 text-gray-900"; 
+totalRow.innerHTML = `
+    <td class="px-4 py-3 text-left font-bold">합계</td>
+    <td class="px-4 py-3 font-bold">${totals.MBB}</td>
+    <td class="px-4 py-3 font-bold">${totals.BB}</td>
+    <td class="px-4 py-3 font-bold">${totals.GB}</td>
+    <td class="px-4 py-3 font-bold">${totals.AI}</td>
+    <td class="px-4 py-3 font-bold text-blue-900">${totals.total}</td>
+`;
+tableBody.appendChild(totalRow);
+
+
 }
 
 // 신규 인원 등록 모달 열기
 document.getElementById('new-belt-btn').addEventListener('click', () => {
-    document.getElementById('belt-form').reset();
-    document.getElementById('belt-id').value = '';
-    
-    // 담당자 모드일 경우 법인명 자동 선택 및 고정
-    if (currentUserRole === 'user') {
-        document.getElementById('belt-corporation').value = currentUserCorporation;
-        document.getElementById('belt-corporation').disabled = true;
-    } else {
-        document.getElementById('belt-corporation').disabled = false;
-    }
-    
-    openModal('belt-modal');
+document.getElementById('belt-form').reset();
+document.getElementById('belt-id').value = '';
+
+// 담당자 모드일 경우 법인명 자동 선택 및 고정
+if (currentUserRole === 'user') {
+    document.getElementById('belt-corporation').value = currentUserCorporation;
+    document.getElementById('belt-corporation').disabled = true;
+} else {
+    document.getElementById('belt-corporation').disabled = false;
+}
+
+openModal('belt-modal');
+
+
 });
 
 // 벨트 인원 저장
 async function saveBelt(e) {
-    e.preventDefault();
-    const id = document.getElementById('belt-id').value;
-    const beltData = {
-        corporation: document.getElementById('belt-corporation').value,
-        name: document.getElementById('belt-name').value,
-        grade: document.getElementById('belt-grade').value,
-    };
-    
-    // 담당자가 자기 법인이 아닌 인원을 등록/수정하려 할 때 방지
-    if (currentUserRole === 'user' && beltData.corporation !== currentUserCorporation) {
-        showAlertModal(`담당자 모드에서는 소속 법인(${currentUserCorporation})의 인원만 등록/수정할 수 있습니다.`);
-        document.getElementById('belt-corporation').value = currentUserCorporation;
-        return;
-    }
+e.preventDefault();
+const id = document.getElementById('belt-id').value;
+const beltData = {
+corporation: document.getElementById('belt-corporation').value,
+name: document.getElementById('belt-name').value,
+grade: document.getElementById('belt-grade').value,
+};
 
-    try {
-        if (id) {
-            const docRef = doc(db, getBeltsCol().path, id);
-            await updateDoc(docRef, beltData);
-        } else {
-            await addDoc(getBeltsCol(), beltData);
-        }
-        closeModalFromButton('belt-modal');
-    } catch (error) {
-        console.error("Error saving belt person:", error);
-        showAlertModal(`저장 중 오류가 발생했습니다: ${error.message}`);
-    }
+// 담당자가 자기 법인이 아닌 인원을 등록/수정하려 할 때 방지
+if (currentUserRole === 'user' && beltData.corporation !== currentUserCorporation) {
+    showAlertModal(`담당자 모드에서는 소속 법인(${currentUserCorporation})의 인원만 등록/수정할 수 있습니다.`);
+    document.getElementById('belt-corporation').value = currentUserCorporation;
+    return;
 }
 
+try {
+    if (id) {
+        const docRef = doc(db, getBeltsCol().path, id);
+        await updateDoc(docRef, beltData);
+    } else {
+        await addDoc(getBeltsCol(), beltData);
+    }
+    closeModalFromButton('belt-modal');
+} catch (error) {
+    console.error("Error saving belt person:", error);
+    showAlertModal(`저장 중 오류가 발생했습니다: ${error.message}`);
+}
+
+
+}
 
 // --- 4. CSV 일괄 업로드/다운로드 ---
 
 // CSV 다운로드 범용 헬퍼
 function triggerCSVDownload(csvContent, filename) {
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", filename);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+const link = document.createElement("a");
+const url = URL.createObjectURL(blob);
+link.setAttribute("href", url);
+link.setAttribute("download", filename);
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
 }
 
 // CSV 변환 헬퍼 (따옴표/쉼표 처리)
 function escapeCSVField(value) {
-    let str = String(value || '');
-    str = str.replace(/"/g, '""'); // Escape double quotes
-    if (str.includes(',') || str.includes('\n') || str.includes('"')) {
-        str = `"${str}"`; // Wrap fields with commas, newlines, or quotes
-    }
-    return str;
+let str = String(value || '');
+str = str.replace(/"/g, '""'); // Escape double quotes
+if (str.includes(',') || str.includes('\n') || str.includes('"')) {
+str = "${str}"; // Wrap fields with commas, newlines, or quotes
+}
+return str;
 }
 
 // 견본 CSV 다운로드
 document.getElementById('download-csv-btn').addEventListener('click', () => {
-    const headers = [
-        "corporation", "department", "team", "name", "leader", "members",
-        "kickoff", "type", "status",
-        "dmaic_d", "dmaic_m", "dmaic_a", "dmaic_i", "dmaic_c",
-        "score_potential", "score_strategy", "score_effect", 
-        "score_ripple", "score_feasibility", "score_urgency"
-    ];
-    
-    const exampleData = [
-        "ATEC", "경영기획", "기획팀", "본사 프로세스 개선", "김본사", "이경영,박기획",
-        "2025-04-01", "6σ", "분석",
-        "1.0", "1.0", "0.5", "0", "0",
-        "9", "18", "9", "9", "9", "9"
-    ].map(escapeCSVField); // 예시 데이터도 이스케이프 처리
-    
-    let csvContent = "\uFEFF"; 
-    csvContent += headers.join(",") + "\n";
-    csvContent += exampleData.join(",") + "\n";
+const headers = [
+"corporation", "department", "team", "name", "leader", "members",
+"kickoff", "type", "status",
+"dmaic_d", "dmaic_m", "dmaic_a", "dmaic_i", "dmaic_c",
+"score_potential", "score_strategy", "score_effect",
+"score_ripple", "score_feasibility", "score_urgency"
+];
 
-    triggerCSVDownload(csvContent, "projects_template.csv");
+const exampleData = [
+    "ATEC", "경영기획", "기획팀", "본사 프로세스 개선", "김본사", "이경영,박기획",
+    "2025-04-01", "6σ", "분석",
+    "1.0", "1.0", "0.5", "0", "0",
+    "9", "18", "9", "9", "9", "9"
+].map(escapeCSVField); // 예시 데이터도 이스케이프 처리
+
+let csvContent = "\uFEFF"; 
+csvContent += headers.join(",") + "\n";
+csvContent += exampleData.join(",") + "\n";
+
+triggerCSVDownload(csvContent, "projects_template.csv");
+
+
 });
 
 // CSV 업로드 버튼 클릭 시 input[type=file] 트리거
 document.getElementById('upload-csv-btn').addEventListener('click', () => {
-    document.getElementById('csv-upload-input').click();
+document.getElementById('csv-upload-input').click();
 });
 
 // CSV 파일 선택 시 처리
 document.getElementById('csv-upload-input').addEventListener('change', (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        parseCSV(file);
-    }
-    event.target.value = null;
+const file = event.target.files[0];
+if (file) {
+parseCSV(file);
+}
+event.target.value = null;
 });
 
 // CSV 파싱 및 일괄 등록
 function parseCSV(file) {
-    const reader = new FileReader();
-    const statusEl = document.getElementById('upload-status');
+const reader = new FileReader();
+const statusEl = document.getElementById('upload-status');
+
+reader.onload = async (e) => {
+    const text = e.target.result;
+    const lines = text.split(/\r\n|\n/);
     
-    reader.onload = async (e) => {
-        const text = e.target.result;
-        const lines = text.split(/\r\n|\n/);
-        
-        if (lines.length < 2) {
-            statusEl.textContent = "오류: CSV 파일이 비어있거나 헤더만 있습니다.";
-            statusEl.className = "mb-4 text-sm text-red-600";
-            return;
-        }
-
-        const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-        const projects = [];
-        const invalidProjects = []; // 담당자 모드일 때 다른 법인 데이터
-
-        for (let i = 1; i < lines.length; i++) {
-            if (lines[i].trim() === '') continue; 
-
-            // 간단한 CSV 파서 (따옴표 안의 쉼표 무시)
-            const data = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g).map(field => {
-                let f = field.trim();
-                if (f.startsWith('"') && f.endsWith('"')) {
-                    f = f.substring(1, f.length - 1).replace(/""/g, '"');
-                }
-                return f;
-            });
-
-            if (data.length < headers.length) {
-                console.warn(`Skipping line ${i+1}: Data length (${data.length}) does not match header length (${headers.length}).`);
-                continue; 
-            }
-            
-            const projectData = {};
-            headers.forEach((header, index) => {
-                projectData[header] = data[index] || '';
-            });
-
-            // 담당자 모드일 경우, 법인명 검증
-            if (currentUserRole === 'user' && projectData.corporation !== currentUserCorporation) {
-                invalidProjects.push(projectData.name || `(Line ${i+1})`);
-                continue; // 이 과제는 등록하지 않고 건너뜀
-            }
-
-            const scores = [
-                parseInt(projectData.score_potential || 1),
-                parseInt(projectData.score_strategy || 1),
-                parseInt(projectData.score_effect || 1),
-                parseInt(projectData.score_ripple || 1),
-                parseInt(projectData.score_feasibility || 1),
-                parseInt(projectData.score_urgency || 1)
-            ];
-            const totalScore = scores.reduce((sum, val) => sum + val, 0);
-            projectData.grade = calculateGrade(totalScore);
-            projectData.score_total = totalScore;
-            
-            // 숫자형 변환
-            projectData.dmaic_d = parseFloat(projectData.dmaic_d || 0);
-            projectData.dmaic_m = parseFloat(projectData.dmaic_m || 0);
-            projectData.dmaic_a = parseFloat(projectData.dmaic_a || 0);
-            projectData.dmaic_i = parseFloat(projectData.dmaic_i || 0);
-            projectData.dmaic_c = parseFloat(projectData.dmaic_c || 0);
-            projectData.score_potential = scores[0];
-            projectData.score_strategy = scores[1];
-            projectData.score_effect = scores[2];
-            projectData.score_ripple = scores[3];
-            projectData.score_feasibility = scores[4];
-            projectData.score_urgency = scores[5];
-
-            projects.push(projectData);
-        }
-
-        let successMessage = "";
-        let errorMessage = "";
-
-        if (projects.length > 0) {
-            statusEl.textContent = "업로드 중... (0%)";
-            statusEl.className = "mb-4 text-sm text-blue-600";
-            try {
-                const batch = writeBatch(db);
-                projects.forEach((project) => {
-                    const docRef = doc(getProjectsCol()); 
-                    batch.set(docRef, project);
-                });
-                
-                await batch.commit();
-                successMessage = `성공: ${projects.length}개의 과제가 일괄 등록되었습니다.`;
-            } catch (error) {
-                console.error("CSV batch upload error:", error);
-                errorMessage = `오류: 업로드 중 문제가 발생했습니다. ${error.message}`;
-            }
-        } else if (invalidProjects.length === 0) {
-            errorMessage = "오류: 유효한 데이터를 찾을 수 없습니다.";
-        }
-
-        if (invalidProjects.length > 0) {
-            errorMessage += ` 다음 ${invalidProjects.length}개 과제는 소속 법인이 달라 제외되었습니다: ${invalidProjects.slice(0,3).join(', ')}...`;
-        }
-
-        statusEl.textContent = successMessage + " " + errorMessage;
-        statusEl.className = `mb-4 text-sm ${errorMessage ? 'text-red-600' : 'text-green-600'}`;
-
-    };
-
-    reader.onerror = () => {
-        statusEl.textContent = "오류: 파일을 읽을 수 없습니다.";
+    if (lines.length < 2) {
+        statusEl.textContent = "오류: CSV 파일이 비어있거나 헤더만 있습니다.";
         statusEl.className = "mb-4 text-sm text-red-600";
-    };
+        return;
+    }
 
-    reader.readAsText(file, 'UTF-8'); 
+    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    const projects = [];
+    const invalidProjects = []; // 담당자 모드일 때 다른 법인 데이터
+
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === '') continue; 
+
+        // 간단한 CSV 파서 (따옴표 안의 쉼표 무시)
+        const data = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/g).map(field => {
+            let f = field.trim();
+            if (f.startsWith('"') && f.endsWith('"')) {
+                f = f.substring(1, f.length - 1).replace(/""/g, '"');
+            }
+            return f;
+        });
+
+        if (data.length < headers.length) {
+            console.warn(`Skipping line ${i+1}: Data length (${data.length}) does not match header length (${headers.length}).`);
+            continue; 
+        }
+        
+        const projectData = {};
+        headers.forEach((header, index) => {
+            projectData[header] = data[index] || '';
+        });
+
+        // 담당자 모드일 경우, 법인명 검증
+        if (currentUserRole === 'user' && projectData.corporation !== currentUserCorporation) {
+            invalidProjects.push(projectData.name || `(Line ${i+1})`);
+            continue; // 이 과제는 등록하지 않고 건너뜀
+        }
+
+        const scores = [
+            parseInt(projectData.score_potential || 1),
+            parseInt(projectData.score_strategy || 1),
+            parseInt(projectData.score_effect || 1),
+            parseInt(projectData.score_ripple || 1),
+            parseInt(projectData.score_feasibility || 1),
+            parseInt(projectData.score_urgency || 1)
+        ];
+        const totalScore = scores.reduce((sum, val) => sum + val, 0);
+        projectData.grade = calculateGrade(totalScore);
+        projectData.score_total = totalScore;
+        
+        // 숫자형 변환
+        projectData.dmaic_d = parseFloat(projectData.dmaic_d || 0);
+        projectData.dmaic_m = parseFloat(projectData.dmaic_m || 0);
+        projectData.dmaic_a = parseFloat(projectData.dmaic_a || 0);
+        projectData.dmaic_i = parseFloat(projectData.dmaic_i || 0);
+        projectData.dmaic_c = parseFloat(projectData.dmaic_c || 0);
+        projectData.score_potential = scores[0];
+        projectData.score_strategy = scores[1];
+        projectData.score_effect = scores[2];
+        projectData.score_ripple = scores[3];
+        projectData.score_feasibility = scores[4];
+        projectData.score_urgency = scores[5];
+
+        projects.push(projectData);
+    }
+
+    let successMessage = "";
+    let errorMessage = "";
+
+    if (projects.length > 0) {
+        statusEl.textContent = "업로드 중... (0%)";
+        statusEl.className = "mb-4 text-sm text-blue-600";
+        try {
+            const batch = writeBatch(db);
+            projects.forEach((project) => {
+                const docRef = doc(getProjectsCol()); 
+                batch.set(docRef, project);
+            });
+            
+            await batch.commit();
+            successMessage = `성공: ${projects.length}개의 과제가 일괄 등록되었습니다.`;
+        } catch (error) {
+            console.error("CSV batch upload error:", error);
+            errorMessage = `오류: 업로드 중 문제가 발생했습니다. ${error.message}`;
+        }
+    } else if (invalidProjects.length === 0) {
+        errorMessage = "오류: 유효한 데이터를 찾을 수 없습니다.";
+    }
+
+    if (invalidProjects.length > 0) {
+        errorMessage += ` 다음 ${invalidProjects.length}개 과제는 소속 법인이 달라 제외되었습니다: ${invalidProjects.slice(0,3).join(', ')}...`;
+    }
+
+    statusEl.textContent = successMessage + " " + errorMessage;
+    statusEl.className = `mb-4 text-sm ${errorMessage ? 'text-red-600' : 'text-green-600'}`;
+};
+
+reader.onerror = () => {
+    statusEl.textContent = "오류: 파일을 읽을 수 없습니다.";
+    statusEl.className = "mb-4 text-sm text-red-600";
+};
+
+reader.readAsText(file, 'UTF-8'); 
+
+
 }
-
 
 // --- 5. 시뮬레이션 기능 (관리자 전용) ---
 
 // DMAIC 계층 규칙을 따르는 시뮬레이션 데이터 생성
 function generateHierarchicalDMAIC(status) {
-    let dmaic = { d: 0, m: 0, a: 0, i: 0, c: 0 };
-    const randomProgress = () => (Math.random() * 0.9).toFixed(1) * 1.0; // 0.0 ~ 0.9
+let dmaic = { d: 0, m: 0, a: 0, i: 0, c: 0 };
+const randomProgress = () => (Math.random() * 0.9).toFixed(1) * 1.0; // 0.0 ~ 0.9
 
-    switch (status) {
-        case '완료':
-            dmaic = { d: 1.0, m: 1.0, a: 1.0, i: 1.0, c: 1.0 };
-            break;
-        case '관리':
-            dmaic = { d: 1.0, m: 1.0, a: 1.0, i: 1.0, c: randomProgress() };
-            break;
-        case '개선':
-            dmaic = { d: 1.0, m: 1.0, a: 1.0, i: randomProgress(), c: 0 };
-            break;
-        case '분석':
-            dmaic = { d: 1.0, m: 1.0, a: randomProgress(), i: 0, c: 0 };
-            break;
-        case '측정':
-            dmaic = { d: 1.0, m: randomProgress(), a: 0, i: 0, c: 0 };
-            break;
-        case '정의':
-            dmaic = { d: randomProgress(), m: 0, a: 0, i: 0, c: 0 };
-            break;
-        case '미실행':
-        default:
-            dmaic = { d: 0, m: 0, a: 0, i: 0, c: 0 };
-            break;
-    }
-    return dmaic;
+switch (status) {
+    case '완료':
+        dmaic = { d: 1.0, m: 1.0, a: 1.0, i: 1.0, c: 1.0 };
+        break;
+    case '관리':
+        dmaic = { d: 1.0, m: 1.0, a: 1.0, i: 1.0, c: randomProgress() };
+        break;
+    case '개선':
+        dmaic = { d: 1.0, m: 1.0, a: 1.0, i: randomProgress(), c: 0 };
+        break;
+    case '분석':
+        dmaic = { d: 1.0, m: 1.0, a: randomProgress(), i: 0, c: 0 };
+        break;
+    case '측정':
+        dmaic = { d: 1.0, m: randomProgress(), a: 0, i: 0, c: 0 };
+        break;
+    case '정의':
+        dmaic = { d: randomProgress(), m: 0, a: 0, i: 0, c: 0 };
+        break;
+    case '미실행':
+    default:
+        dmaic = { d: 0, m: 0, a: 0, i: 0, c: 0 };
+        break;
+}
+return dmaic;
+
+
 }
 
 // 데이터 생성 (수정된 로직 사용)
 document.getElementById('run-simulation-btn').addEventListener('click', async () => {
-    if (currentUserRole !== 'admin') {
-        showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
-        return;
+if (currentUserRole !== 'admin') {
+showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
+return;
+}
+try {
+const batch = writeBatch(db);
+
+    const corporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
+    const types = ["6σ", "6S", "R&D", "AI"];
+    const statuses = ["미실행", "정의", "측정", "분석", "개선", "관리", "완료"];
+    const leaders = ["김철수", "이영희", "박갑동", "최정민", "한유진"];
+    
+    // 1. 가상 과제 20개 생성
+    for (let i = 0; i < 20; i++) {
+        const docRef = doc(getProjectsCol());
+        
+        const status = statuses[Math.floor(Math.random() * statuses.length)];
+        const dmaic = generateHierarchicalDMAIC(status);
+
+        const scores = [
+            [1,3,9][Math.floor(Math.random() * 3)],
+            [1,6,18][Math.floor(Math.random() * 3)],
+            [1,3,9][Math.floor(Math.random() * 3)],
+            [1,3,9][Math.floor(Math.random() * 3)],
+            [1,3,9][Math.floor(Math.random() * 3)],
+            [1,3,9][Math.floor(Math.random() * 3)]
+        ];
+        const totalScore = scores.reduce((sum, val) => sum + val, 0);
+
+        const project = {
+            corporation: corporations[Math.floor(Math.random() * corporations.length)],
+            team: `테스트팀 ${i+1}`,
+            name: `가상 프로젝트 ${i+1}`,
+            leader: leaders[Math.floor(Math.random() * leaders.length)],
+            kickoff: `2025-0${Math.floor(Math.random() * 9) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+            type: types[Math.floor(Math.random() * types.length)],
+            status: status,
+            dmaic_d: dmaic.d,
+            dmaic_m: dmaic.m,
+            dmaic_a: dmaic.a,
+            dmaic_i: dmaic.i,
+            dmaic_c: dmaic.c,
+            score_potential: scores[0],
+            score_strategy: scores[1],
+            score_effect: scores[2],
+            score_ripple: scores[3],
+            score_feasibility: scores[4],
+            score_urgency: scores[5],
+            score_total: totalScore,
+            grade: calculateGrade(totalScore)
+        };
+        batch.set(docRef, project);
     }
-    try {
-        const batch = writeBatch(db);
-        
-        const corporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
-        const types = ["6σ", "6S", "R&D", "AI"];
-        const statuses = ["미실행", "정의", "측정", "분석", "개선", "관리", "완료"];
-        const leaders = ["김철수", "이영희", "박갑동", "최정민", "한유진"];
-        
-        // 1. 가상 과제 20개 생성
-        for (let i = 0; i < 20; i++) {
-            const docRef = doc(getProjectsCol());
-            
-            const status = statuses[Math.floor(Math.random() * statuses.length)];
-            const dmaic = generateHierarchicalDMAIC(status);
 
-            const scores = [
-                [1,3,9][Math.floor(Math.random() * 3)],
-                [1,6,18][Math.floor(Math.random() * 3)],
-                [1,3,9][Math.floor(Math.random() * 3)],
-                [1,3,9][Math.floor(Math.random() * 3)],
-                [1,3,9][Math.floor(Math.random() * 3)],
-                [1,3,9][Math.floor(Math.random() * 3)]
-            ];
-            const totalScore = scores.reduce((sum, val) => sum + val, 0);
-
-            const project = {
-                corporation: corporations[Math.floor(Math.random() * corporations.length)],
-                team: `테스트팀 ${i+1}`,
-                name: `가상 프로젝트 ${i+1}`,
-                leader: leaders[Math.floor(Math.random() * leaders.length)],
-                kickoff: `2025-0${Math.floor(Math.random() * 9) + 1}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-                type: types[Math.floor(Math.random() * types.length)],
-                status: status,
-                dmaic_d: dmaic.d,
-                dmaic_m: dmaic.m,
-                dmaic_a: dmaic.a,
-                dmaic_i: dmaic.i,
-                dmaic_c: dmaic.c,
-                score_potential: scores[0],
-                score_strategy: scores[1],
-                score_effect: scores[2],
-                score_ripple: scores[3],
-                score_feasibility: scores[4],
-                score_urgency: scores[5],
-                score_total: totalScore,
-                grade: calculateGrade(totalScore)
-            };
-            batch.set(docRef, project);
-        }
-
-        // 2. 가상 벨트 인원 30명 생성
-        const grades = ["MBB", "BB", "GB", "AI"];
-        const names = ["김MBB", "이BB", "박GB", "최AI", "정아무개", "윤테스트", "한시뮬"];
-        
-        for (let i = 0; i < 30; i++) {
-            const docRef = doc(getBeltsCol());
-            const belt = {
-                corporation: corporations[Math.floor(Math.random() * corporations.length)],
-                name: `${names[Math.floor(Math.random() * names.length)]} ${i+1}`,
-                grade: grades[Math.floor(Math.random() * grades.length)],
-            };
-            batch.set(docRef, belt);
-        }
-
-        await batch.commit();
-        showAlertModal("시뮬레이션 데이터 20개 과제, 30명 인원이 생성되었습니다.");
-
-    } catch (error) {
-        console.error("Simulation data creation error:", error);
-        showAlertModal(`데이터 생성 중 오류 발생: ${error.message}`);
+    // 2. 가상 벨트 인원 30명 생성
+    const grades = ["MBB", "BB", "GB", "AI"];
+    const names = ["김MBB", "이BB", "박GB", "최AI", "정아무개", "윤테스트", "한시뮬"];
+    
+    for (let i = 0; i < 30; i++) {
+        const docRef = doc(getBeltsCol());
+        const belt = {
+            corporation: corporations[Math.floor(Math.random() * corporations.length)],
+            name: `${names[Math.floor(Math.random() * names.length)]} ${i+1}`,
+            grade: grades[Math.floor(Math.random() * grades.length)],
+        };
+        batch.set(docRef, belt);
     }
+
+    await batch.commit();
+    showAlertModal("시뮬레이션 데이터 20개 과제, 30명 인원이 생성되었습니다.");
+
+} catch (error) {
+    console.error("Simulation data creation error:", error);
+    showAlertModal(`데이터 생성 중 오류 발생: ${error.message}`);
+}
+
+
 });
 
 // 전체 삭제
 document.getElementById('delete-all-btn').addEventListener('click', async () => {
-    if (currentUserRole !== 'admin') {
-        showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
-        return;
-    }
-    try {
-        const batch = writeBatch(db);
-        
-        // 관리자는 전체 삭제, 담당자는 자기 법인 데이터만 삭제
-        const projectsQuery = (currentUserRole === 'admin') ? getProjectsCol() : query(getProjectsCol(), where("corporation", "==", currentUserCorporation));
-        const beltsQuery = (currentUserRole === 'admin') ? getBeltsCol() : query(getBeltsCol(), where("corporation", "==", currentUserCorporation));
-        
-        const projectsSnapshot = await getDocs(projectsQuery);
-        projectsSnapshot.forEach(doc => {
-            batch.delete(doc.ref);
-        });
-        
-        const beltsSnapshot = await getDocs(beltsQuery);
-        beltsSnapshot.forEach(doc => {
-            batch.delete(doc.ref);
-        });
+if (currentUserRole !== 'admin') {
+showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
+return;
+}
+try {
+const batch = writeBatch(db);
 
-        await batch.commit();
-        showAlertModal("데이터가 삭제되었습니다.");
+    // 관리자는 전체 삭제, 담당자는 자기 법인 데이터만 삭제
+    const projectsQuery = (currentUserRole === 'admin') ? getProjectsCol() : query(getProjectsCol(), where("corporation", "==", currentUserCorporation));
+    const beltsQuery = (currentUserRole === 'admin') ? getBeltsCol() : query(getBeltsCol(), where("corporation", "==", currentUserCorporation));
+    
+    const projectsSnapshot = await getDocs(projectsQuery);
+    projectsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+    });
+    
+    const beltsSnapshot = await getDocs(beltsQuery);
+    beltsSnapshot.forEach(doc => {
+        batch.delete(doc.ref);
+    });
 
-    } catch (error) {
-        console.error("Simulation data deletion error:", error);
-        showAlertModal(`데이터 삭제 중 오류 발생: ${error.message}`);
-    }
+    await batch.commit();
+    showAlertModal("데이터가 삭제되었습니다.");
+
+} catch (error) {
+    console.error("Simulation data deletion error:", error);
+    showAlertModal(`데이터 삭제 중 오류 발생: ${error.message}`);
+}
+
+
 });
-
 
 // --- 6. 데이터 저장 & 로그아웃 (요약본 + 로우 데이터) ---
 
 // 프로젝트 요약 CSV 생성
 function generateProjectSummaryCSV() {
-    // getProjectSummaryStats는 이미 currentUserRole을 인지하고 필터링된 데이터를 반환함
-    const { stats, totals, corporations } = getProjectSummaryStats(localProjectsCache);
-    const headers = ["법인명", "6σ (건)", "6S (건)", "R&D (건)", "AI (건)", "총 과제 (건)", "총 점수"];
-    
-    let csv = "\uFEFF"; // BOM
-    csv += headers.join(',') + '\n';
+// getProjectSummaryStats는 이미 currentUserRole을 인지하고 필터링된 데이터를 반환함
+const { stats, totals, corporations } = getProjectSummaryStats(localProjectsCache);
+const headers = ["법인명", "6σ (건)", "6S (건)", "R&D (건)", "AI (건)", "총 과제 (건)", "총 점수"];
 
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        const row = [
-            escapeCSVField(corp),
-            data["6σ"],
-            data["6S"],
-            data["R&D"],
-            data["AI"],
-            data.total,
-            data.score
-        ];
-        csv += row.join(',') + '\n';
-    });
+let csv = "\uFEFF"; // BOM
+csv += headers.join(',') + '\n';
 
-    // 합계 행
-    const totalRow = [
-        escapeCSVField("합계"),
-        totals["6σ"],
-        totals["6S"],
-        totals["R&D"],
-        totals["AI"],
-        totals.total,
-        totals.score
+corporations.forEach(corp => {
+    const data = stats[corp];
+    const row = [
+        escapeCSVField(corp),
+        data["6σ"],
+        data["6S"],
+        data["R&D"],
+        data["AI"],
+        data.total,
+        data.score
     ];
-    csv += totalRow.join(',') + '\n';
-    
-    return csv;
+    csv += row.join(',') + '\n';
+});
+
+// 합계 행
+const totalRow = [
+    escapeCSVField("합계"),
+    totals["6σ"],
+    totals["6S"],
+    totals["R&D"],
+    totals["AI"],
+    totals.total,
+    totals.score
+];
+csv += totalRow.join(',') + '\n';
+
+return csv;
+
+
 }
 
 // 벨트 요약 CSV 생성
 function generateBeltSummaryCSV() {
-    // getBeltSummaryStats는 이미 currentUserRole을 인지하고 필터링된 데이터를 반환함
-    const { stats, totals, corporations } = getBeltSummaryStats(localBeltsCache);
-    const headers = ["법인명", "MBB (명)", "BB (명)", "GB (명)", "AI (명)", "총 인원 (명)"];
-    
-    let csv = "\uFEFF"; // BOM
-    csv += headers.join(',') + '\n';
+// getBeltSummaryStats는 이미 currentUserRole을 인지하고 필터링된 데이터를 반환함
+const { stats, totals, corporations } = getBeltSummaryStats(localBeltsCache);
+const headers = ["법인명", "MBB (명)", "BB (명)", "GB (명)", "AI (명)", "총 인원 (명)"];
 
-    corporations.forEach(corp => {
-        const data = stats[corp];
-        const row = [
-            escapeCSVField(corp),
-            data.MBB,
-            data.BB,
-            data.GB,
-            data.AI,
-            data.total
-        ];
-        csv += row.join(',') + '\n';
-    });
+let csv = "\uFEFF"; // BOM
+csv += headers.join(',') + '\n';
 
-    // 합계 행
-    const totalRow = [
-        escapeCSVField("합계"),
-        totals.MBB,
-        totals.BB,
-        totals.GB,
-        totals.AI,
-        totals.total
+corporations.forEach(corp => {
+    const data = stats[corp];
+    const row = [
+        escapeCSVField(corp),
+        data.MBB,
+        data.BB,
+        data.GB,
+        data.AI,
+        data.total
     ];
-    csv += totalRow.join(',') + '\n';
-    
-    return csv;
+    csv += row.join(',') + '\n';
+});
+
+// 합계 행
+const totalRow = [
+    escapeCSVField("합계"),
+    totals.MBB,
+    totals.BB,
+    totals.GB,
+    totals.AI,
+    totals.total
+];
+csv += totalRow.join(',') + '\n';
+
+return csv;
+
+
 }
 
 // 프로젝트 로우 데이터 CSV 생성
 function generateProjectRawDataCSV() {
-    // localProjectsCache는 이미 필터링된 데이터임
-    if (localProjectsCache.length === 0) return "";
-    
-    const headers = Object.keys(localProjectsCache.reduce((acc, curr) => ({...acc, ...curr}), {}));
-    const filteredHeaders = headers.filter(h => h !== 'id'); 
-    
-    let csv = "\uFEFF"; // BOM
-    csv += filteredHeaders.map(escapeCSVField).join(',') + '\n';
+// localProjectsCache는 이미 필터링된 데이터임
+if (localProjectsCache.length === 0) return "";
 
-    localProjectsCache.forEach(project => {
-        const row = filteredHeaders.map(header => {
-            return escapeCSVField(project[header]);
-        });
-        csv += row.join(',') + '\n';
+const headers = Object.keys(localProjectsCache.reduce((acc, curr) => ({...acc, ...curr}), {}));
+const filteredHeaders = headers.filter(h => h !== 'id'); 
+
+let csv = "\uFEFF"; // BOM
+csv += filteredHeaders.map(escapeCSVField).join(',') + '\n';
+
+localProjectsCache.forEach(project => {
+    const row = filteredHeaders.map(header => {
+        return escapeCSVField(project[header]);
     });
-    
-    return csv;
+    csv += row.join(',') + '\n';
+});
+
+return csv;
+
+
 }
 
 // 벨트 로우 데이터 CSV 생성
 function generateBeltRawDataCSV() {
-    // localBeltsCache는 이미 필터링된 데이터임
-    if (localBeltsCache.length === 0) return "";
+// localBeltsCache는 이미 필터링된 데이터임
+if (localBeltsCache.length === 0) return "";
 
-    const headers = ["id", "corporation", "name", "grade"];
-    const filteredHeaders = headers.filter(h => h !== 'id');
+const headers = ["id", "corporation", "name", "grade"];
+const filteredHeaders = headers.filter(h => h !== 'id');
 
-    let csv = "\uFEFF"; // BOM
-    csv += filteredHeaders.map(escapeCSVField).join(',') + '\n';
-    
-    localBeltsCache.forEach(belt => {
-        const row = filteredHeaders.map(header => {
-            return escapeCSVField(belt[header]);
-        });
-        csv += row.join(',') + '\n';
+let csv = "\uFEFF"; // BOM
+csv += filteredHeaders.map(escapeCSVField).join(',') + '\n';
+
+localBeltsCache.forEach(belt => {
+    const row = filteredHeaders.map(header => {
+        return escapeCSVField(belt[header]);
     });
+    csv += row.join(',') + '\n';
+});
 
-    return csv;
+return csv;
+
+
 }
-
 
 // 데이터 저장 및 로그아웃 (총 4개 파일)
 async function exportDataAndLogout() {
-    try {
-        // 1. Projects 요약 CSV 생성
-        const projectsSummaryCSV = generateProjectSummaryCSV();
-        triggerCSVDownload(projectsSummaryCSV, 'project_summary_export.csv');
+try {
+// 1. Projects 요약 CSV 생성
+const projectsSummaryCSV = generateProjectSummaryCSV();
+triggerCSVDownload(projectsSummaryCSV, 'project_summary_export.csv');
 
-        // 2. Belts 요약 CSV 생성
-        const beltsSummaryCSV = generateBeltSummaryCSV();
-        triggerCSVDownload(beltsSummaryCSV, 'belt_summary_export.csv');
+    // 2. Belts 요약 CSV 생성
+    const beltsSummaryCSV = generateBeltSummaryCSV();
+    triggerCSVDownload(beltsSummaryCSV, 'belt_summary_export.csv');
 
-        // 3. Projects 로우 데이터 CSV 생성
-        const projectsRawCSV = generateProjectRawDataCSV();
-        if (projectsRawCSV) {
-            triggerCSVDownload(projectsRawCSV, 'projects_raw_data_export.csv');
-        }
-
-        // 4. Belts 로우 데이터 CSV 생성
-        const beltsRawCSV = generateBeltRawDataCSV();
-        if (beltsRawCSV) {
-            triggerCSVDownload(beltsRawCSV, 'belts_raw_data_export.csv');
-        }
-
-        // 5. 로그아웃 (페이지 새로고침)
-        setTimeout(() => {
-            location.reload();
-        }, 500);
-
-    } catch (error) {
-        console.error("Error exporting data:", error);
-        showAlertModal(`데이터 저장 중 오류 발생: ${error.message}`);
+    // 3. Projects 로우 데이터 CSV 생성
+    const projectsRawCSV = generateProjectRawDataCSV();
+    if (projectsRawCSV) {
+        triggerCSVDownload(projectsRawCSV, 'projects_raw_data_export.csv');
     }
+
+    // 4. Belts 로우 데이터 CSV 생성
+    const beltsRawCSV = generateBeltRawDataCSV();
+    if (beltsRawCSV) {
+        triggerCSVDownload(beltsRawCSV, 'belts_raw_data_export.csv');
+    }
+
+    // 5. 로그아웃 (페이지 새로고침)
+    setTimeout(() => {
+        location.reload();
+    }, 500);
+
+} catch (error) {
+    console.error("Error exporting data:", error);
+    showAlertModal(`데이터 저장 중 오류 발생: ${error.message}`);
 }
 
+
+}
 
 // --- 7. 유틸리티 함수 (탭, 모달) ---
 
@@ -1737,39 +1778,41 @@ const tabLinks = document.querySelectorAll('.tab-link');
 const tabContents = document.querySelectorAll('.tab-content');
 
 tabLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.dataset.tab;
+link.addEventListener('click', (e) => {
+e.preventDefault();
+const targetId = link.dataset.tab;
 
-        tabLinks.forEach(link => link.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
+    tabLinks.forEach(link => link.classList.remove('active'));
+    tabContents.forEach(content => content.classList.remove('active'));
 
-        link.classList.add('active');
-        document.getElementById(targetId).classList.add('active');
-    });
+    link.classList.add('active');
+    document.getElementById(targetId).classList.add('active');
+});
+
+
 });
 
 // 모달 열기
 function openModal(modalId) {
-    document.getElementById(modalId).classList.remove('hidden');
+document.getElementById(modalId).classList.remove('hidden');
 }
 
 // 모달 닫기 (배경 클릭 시)
 function closeModal(modalId, event) {
-    if (event && event.target === event.currentTarget) {
-        document.getElementById(modalId).classList.add('hidden');
-    }
+if (event && event.target === event.currentTarget) {
+document.getElementById(modalId).classList.add('hidden');
+}
 }
 
 // 모달 닫기 (버튼 클릭 시 - 함수명 분리)
 function closeModalFromButton(modalId) {
-    document.getElementById(modalId).classList.add('hidden');
+document.getElementById(modalId).classList.add('hidden');
 }
 
 // 커스텀 알림 모달
 function showAlertModal(message) {
-    document.getElementById('alert-message').textContent = message;
-    openModal('alert-modal');
+document.getElementById('alert-message').textContent = message;
+openModal('alert-modal');
 }
 
 // --- 글로벌 이벤트 리스너 ---
@@ -1789,7 +1832,7 @@ document.getElementById('export-logout-btn').addEventListener('click', exportDat
 
 window.closeModal = closeModal;
 window.closeModalFromButton = closeModalFromButton;
-
+    
 </script>
 </body>
 </html>
