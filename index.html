@@ -115,9 +115,12 @@
                             </button>
                         </div>
                         
-                        <!-- 공용 로그아웃 버튼 -->
-                        <button id="export-logout-btn" class="btn btn-primary text-sm">
-                            데이터 저장 & 로그아웃
+                        <!-- (수정) 공용 로그아웃 버튼을 '저장'과 '로그아웃'으로 분리 -->
+                        <button id="export-data-btn" class="btn btn-secondary text-sm">
+                            데이터 저장 (CSV 5개)
+                        </button>
+                        <button id="logout-btn" class="btn btn-primary text-sm">
+                            로그아웃
                         </button>
                     </div>
                 </div>
@@ -147,7 +150,7 @@
         <!-- 메인 콘텐츠 -->
         <main class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-6">
             
-            <!-- 탭 1: 과제 운영 -->
+            <!-- 탭 1: 과제 운영 (복구) -->
             <div id="tab-projects" class="tab-content active">
                 <div class="bg-white shadow overflow-hidden rounded-lg">
                     <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
@@ -186,7 +189,7 @@
                 </div>
             </div>
 
-            <!-- 탭 2: 법인별 요약 -->
+            <!-- 탭 2: 법인별 요약 (복구) -->
             <div id="tab-summary" class="tab-content">
                 <div class="bg-white shadow overflow-hidden rounded-lg">
                     <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
@@ -214,8 +217,9 @@
                 </div>
             </div>
 
-            <!-- 탭 3: 벨트 요약 -->
+            <!-- 탭 3: 벨트 요약 (복구 및 수정) -->
             <div id="tab-belts" class="tab-content">
+                <!-- 요약표 (복구) -->
                 <div class="bg-white shadow overflow-hidden rounded-lg">
                     <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
                         <h3 class="text-lg leading-6 font-semibold text-gray-900">벨트 요약 (인원)</h3>
@@ -240,9 +244,51 @@
                         </table>
                     </div>
                 </div>
+                
+                <!-- (신규) 벨트 상세 목록 (올바른 위치로 이동) -->
+                <div class="mt-6 bg-white shadow overflow-hidden rounded-lg">
+                    <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg leading-6 font-semibold text-gray-900">벨트 인원 상세</h3>
+                        <div class="flex space-x-4">
+                            <!-- 필터 -->
+                            <select id="belt-detail-corp-filter" class="text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-100">
+                                <option value="전체">법인 (전체)</option>
+                                <option value="ATEC">ATEC</option>
+                                <option value="ATEC SYSTEM">ATEC SYSTEM</option>
+                                <option value="ATEC COMPUTER">ATEC COMPUTER</option>
+                                <option value="ATEC MOBILITY">ATEC MOBILITY</option>
+                                <option value="ATEC C&">ATEC C&</option>
+                                <option value="ATEC auto">ATEC auto</option>
+                            </select>
+                            <select id="belt-detail-grade-filter" class="text-sm rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="전체">벨트 (전체)</option>
+                                <option value="MBB">MBB</option>
+                                <option value="BB">BB</option>
+                                <option value="GB">GB</option>
+                                <option value="AI">AI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm text-center">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3">번호</th>
+                                    <th class="px-4 py-3">법인명</th>
+                                    <th class="px-4 py-3">벨트명</th>
+                                    <th class="px-4 py-3">성명</th>
+                                </tr>
+                            </thead>
+                            <tbody id="belt-details-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- 데이터가 여기에 동적으로 삽입됩니다 -->
+                                <tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">데이터 로딩 중...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             
-            <!-- 탭 4: 진척율 현황 대시보드 -->
+            <!-- 탭 4: 진척율 현황 대시보드 (복구) -->
             <div id="tab-progress" class="tab-content">
                 <div class="space-y-6">
                     <!-- 상단: 그래프 -->
@@ -792,6 +838,7 @@
             }
         }
 
+        // --- [START] 누락된 함수들 복구 ---
 
         // --- 데이터 리스너 설정 (권한별 필터링 적용) ---
         function setupListeners() {
@@ -808,9 +855,12 @@
             
             // 담당자 모드일 경우 필터 드롭다운을 해당 법인으로 고정
             if (currentUserRole === 'user') {
-                const progressFilter = document.getElementById('progress-corp-filter');
-                progressFilter.value = currentUserCorporation;
-                progressFilter.disabled = true;
+                document.getElementById('progress-corp-filter').value = currentUserCorporation;
+                document.getElementById('progress-corp-filter').disabled = true;
+
+                // (신규) 벨트 상세 필터도 비활성화
+                document.getElementById('belt-detail-corp-filter').value = currentUserCorporation;
+                document.getElementById('belt-detail-corp-filter').disabled = true;
             }
 
             // 1. 과제 쿼리 (권한별 분기)
@@ -855,6 +905,7 @@
                 });
                 
                 loadBeltSummary(localBeltsCache); 
+                loadBeltDetailsTable(); // (신규) 벨트 상세 테이블 로드
             }, (error) => {
                 console.error("Error listening to belts:", error);
             });
@@ -1050,24 +1101,6 @@
                 showAlertModal(`삭제 중 오류가 발생했습니다: ${error.message}`);
             }
         }
-
-        // 신규 과제 모달 열기
-        document.getElementById('new-project-btn').addEventListener('click', () => {
-            document.getElementById('project-form').reset(); 
-            document.getElementById('project-id').value = '';
-            document.getElementById('project-modal-title').textContent = '신규 과제 등록';
-            
-            // 담당자 모드일 경우 법인명 자동 선택 및 고정
-            if (currentUserRole === 'user') {
-                document.getElementById('project-corporation').value = currentUserCorporation;
-                document.getElementById('project-corporation').disabled = true;
-            } else {
-                document.getElementById('project-corporation').disabled = false;
-            }
-
-            toggleValiditySection(); 
-            openModal('project-modal');
-        });
 
         // 과제 수정 모달 열기
         async function openEditProjectModal(id) {
@@ -1303,21 +1336,37 @@
             tableBody.appendChild(totalRow);
         }
 
-        // 신규 인원 등록 모달 열기
-        document.getElementById('new-belt-btn').addEventListener('click', () => {
-            document.getElementById('belt-form').reset();
-            document.getElementById('belt-id').value = '';
-            
-            // 담당자 모드일 경우 법인명 자동 선택 및 고정
-            if (currentUserRole === 'user') {
-                document.getElementById('belt-corporation').value = currentUserCorporation;
-                document.getElementById('belt-corporation').disabled = true;
-            } else {
-                document.getElementById('belt-corporation').disabled = false;
+        // (신규) 벨트 상세 테이블 로드
+        function loadBeltDetailsTable() {
+            const corpFilter = document.getElementById('belt-detail-corp-filter').value;
+            const gradeFilter = document.getElementById('belt-detail-grade-filter').value;
+            const tableBody = document.getElementById('belt-details-table-body');
+
+            if (!tableBody) return; // 탭이 아직 로드되지 않았을 수 있음
+
+            const filteredBelts = localBeltsCache.filter(belt => {
+                const corpMatch = (corpFilter === '전체') || (belt.corporation === corpFilter);
+                const gradeMatch = (gradeFilter === '전체') || (belt.grade === gradeFilter);
+                return corpMatch && gradeMatch;
+            });
+
+            if (filteredBelts.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="px-4 py-4 text-center text-gray-500">조회된 인원이 없습니다.</td></tr>`;
+                return;
             }
-            
-            openModal('belt-modal');
-        });
+
+            tableBody.innerHTML = '';
+            filteredBelts.forEach((belt, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-4 py-3 whitespace-nowrap">${index + 1}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${belt.corporation || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${belt.grade || 'N/A'}</td>
+                    <td class="px-4 py-3 whitespace-nowrap">${belt.name || 'N/A'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
 
         // 벨트 인원 저장
         async function saveBelt(e) {
@@ -1536,45 +1585,7 @@
             }
             return str;
         }
-
-        // 견본 CSV 다운로드
-        document.getElementById('download-csv-btn').addEventListener('click', () => {
-            const headers = [
-                "corporation", "department", "team", "name", "leader", "members",
-                "kickoff", "type", "status",
-                "dmaic_d", "dmaic_m", "dmaic_a", "dmaic_i", "dmaic_c",
-                "score_potential", "score_strategy", "score_effect", 
-                "score_ripple", "score_feasibility", "score_urgency"
-            ];
-            
-            const exampleData = [
-                "ATEC", "경영기획", "기획팀", "본사 프로세스 개선", "김본사", "이경영,박기획",
-                "2025-04-01", "6σ", "분석",
-                "1.0", "1.0", "0.5", "0", "0",
-                "9", "18", "9", "9", "9", "9"
-            ].map(escapeCSVField); // 예시 데이터도 이스케이프 처리
-            
-            let csvContent = "\uFEFF"; 
-            csvContent += headers.join(",") + "\n";
-            csvContent += exampleData.join(",") + "\n";
-
-            triggerCSVDownload(csvContent, "projects_template.csv");
-        });
-
-        // CSV 업로드 버튼 클릭 시 input[type=file] 트리거
-        document.getElementById('upload-csv-btn').addEventListener('click', () => {
-            document.getElementById('csv-upload-input').click();
-        });
-
-        // CSV 파일 선택 시 처리
-        document.getElementById('csv-upload-input').addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                parseCSV(file);
-            }
-            event.target.value = null;
-        });
-
+        
         // CSV 파싱 및 일괄 등록
         function parseCSV(file) {
             const reader = new FileReader();
@@ -1725,121 +1736,7 @@
             return dmaic;
         }
 
-        // 데이터 생성 (수정된 로직 사용)
-        document.getElementById('run-simulation-btn').addEventListener('click', async () => {
-            if (currentUserRole !== 'admin') {
-                showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
-                return;
-            }
-            try {
-                const batch = writeBatch(db);
-                
-                const corporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
-                const types = ["6σ", "6S", "R&D", "AI"];
-                const statuses = ["미실행", "정의", "측정", "분석", "개선", "관리", "완료"];
-                const leaders = ["김철수", "이영희", "박갑동", "최정민", "한유진"];
-                
-                // 1. 가상 과제 20개 생성
-                for (let i = 0; i < 20; i++) {
-                    const docRef = doc(getProjectsCol());
-                    
-                    const status = statuses[Math.floor(Math.random() * statuses.length)];
-                    const dmaic = generateHierarchicalDMAIC(status);
-
-                    const scores = [
-                        [1,3,9][Math.floor(Math.random() * 3)],
-                        [1,6,18][Math.floor(Math.random() * 3)],
-                        [1,3,9][Math.floor(Math.random() * 3)],
-                        [1,3,9][Math.floor(Math.random() * 3)],
-                        [1,3,9][Math.floor(Math.random() * 3)],
-                        [1,3,9][Math.floor(Math.random() * 3)]
-                    ];
-                    const totalScore = scores.reduce((sum, val) => sum + val, 0);
-                    const month = Math.floor(Math.random() * 12) + 1; // 1-12월
-
-                    const project = {
-                        corporation: corporations[Math.floor(Math.random() * corporations.length)],
-                        team: `테스트팀 ${i+1}`,
-                        name: `가상 프로젝트 ${i+1}`,
-                        leader: leaders[Math.floor(Math.random() * leaders.length)],
-                        kickoff: `2025-${String(month).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
-                        type: types[Math.floor(Math.random() * types.length)],
-                        status: status,
-                        dmaic_d: dmaic.d,
-                        dmaic_m: dmaic.m,
-                        dmaic_a: dmaic.a,
-                        dmaic_i: dmaic.i,
-                        dmaic_c: dmaic.c,
-                        score_potential: scores[0],
-                        score_strategy: scores[1],
-                        score_effect: scores[2],
-                        score_ripple: scores[3],
-                        score_feasibility: scores[4],
-                        score_urgency: scores[5],
-                        score_total: totalScore,
-                        grade: calculateGrade(totalScore)
-                    };
-                    batch.set(docRef, project);
-                }
-
-                // 2. 가상 벨트 인원 30명 생성
-                const grades = ["MBB", "BB", "GB", "AI"];
-                const names = ["김MBB", "이BB", "박GB", "최AI", "정아무개", "윤테스트", "한시뮬"];
-                
-                for (let i = 0; i < 30; i++) {
-                    const docRef = doc(getBeltsCol());
-                    const belt = {
-                        corporation: corporations[Math.floor(Math.random() * corporations.length)],
-                        name: `${names[Math.floor(Math.random() * names.length)]} ${i+1}`,
-                        grade: grades[Math.floor(Math.random() * grades.length)],
-                    };
-                    batch.set(docRef, belt);
-                }
-
-                await batch.commit();
-                showAlertModal("시뮬레이션 데이터 20개 과제, 30명 인원이 생성되었습니다.");
-
-            } catch (error) {
-                console.error("Simulation data creation error:", error);
-                showAlertModal(`데이터 생성 중 오류 발생: ${error.message}`);
-            }
-        });
-
-        // 전체 삭제
-        document.getElementById('delete-all-btn').addEventListener('click', async () => {
-            if (currentUserRole !== 'admin') {
-                showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
-                return;
-            }
-            try {
-                const batch = writeBatch(db);
-                
-                // 관리자는 전체 삭제
-                if (currentUserRole === 'admin') {
-                    const projectsSnapshot = await getDocs(getProjectsCol());
-                    projectsSnapshot.forEach(doc => {
-                        batch.delete(doc.ref);
-                    });
-                    
-                    const beltsSnapshot = await getDocs(getBeltsCol());
-                    beltsSnapshot.forEach(doc => {
-                        batch.delete(doc.ref);
-                    });
-
-                    await batch.commit();
-                    showAlertModal("모든 데이터가 삭제되었습니다.");
-                } else {
-                     showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
-                }
-
-            } catch (error) {
-                console.error("Simulation data deletion error:", error);
-                showAlertModal(`데이터 삭제 중 오류 발생: ${error.message}`);
-            }
-        });
-
-
-        // --- 7. 데이터 저장 & 로그아웃 (총 5개 파일) ---
+        // --- 7. 데이터 저장 & 로그아웃 (요약본 + 로우 데이터) ---
 
         // 프로젝트 요약 CSV 생성
         function generateProjectSummaryCSV() {
@@ -1917,21 +1814,20 @@
         
         // (신규) 진척율 현황 요약 CSV 생성
         function generateProgressSummaryCSV() {
-            // getProgressDashboardStats는 이미 필터링된 localProjectsCache를 사용함
-            const { tableStats } = getProgressDashboardStats(); 
-            const headers = ["월", "6S", "6σ", "R&D", "AI", "Total"];
+            const { tableStats } = getProgressDashboardStats();
+            const headers = ["월", "6S (%)", "6σ (%)", "R&D (%)", "AI (%)", "Total (%)"];
             
             let csv = "\uFEFF"; // BOM
-            csv += headers.map(escapeCSVField).join(',') + '\n';
-
+            csv += headers.join(',') + '\n';
+            
             tableStats.forEach((monthData, index) => {
                 const row = [
                     escapeCSVField(`${index + 1}월`),
-                    escapeCSVField(monthData['6S'].avg.toFixed(1) + '%'),
-                    escapeCSVField(monthData['6σ'].avg.toFixed(1) + '%'),
-                    escapeCSVField(monthData['R&D'].avg.toFixed(1) + '%'),
-                    escapeCSVField(monthData['AI'].avg.toFixed(1) + '%'),
-                    escapeCSVField(monthData['Total'].avg.toFixed(1) + '%')
+                    monthData['6S'].avg.toFixed(1),
+                    monthData['6σ'].avg.toFixed(1),
+                    monthData['R&D'].avg.toFixed(1),
+                    monthData['AI'].avg.toFixed(1),
+                    monthData['Total'].avg.toFixed(1)
                 ];
                 csv += row.join(',') + '\n';
             });
@@ -1977,7 +1873,7 @@
             let csv = "\uFEFF"; // BOM
             csv += headers.map(escapeCSVField).join(',') + '\n';
             
-            localBeltsCache.forEach(belt => {
+            localProjectsCache.forEach(belt => {
                 const row = headers.map(header => {
                     return escapeCSVField(belt[header]);
                 });
@@ -1986,10 +1882,11 @@
 
             return csv;
         }
+        // --- [END] 누락된 함수들 복구 ---
 
 
-        // 데이터 저장 및 로그아웃 (총 5개 파일)
-        async function exportDataAndLogout() {
+        // (수정) 데이터 저장 (로그아웃 기능 분리)
+        async function exportData() {
             try {
                 // 1. Projects 요약 CSV 생성
                 const projectsSummaryCSV = generateProjectSummaryCSV();
@@ -2015,10 +1912,8 @@
                     triggerCSVDownload(beltsRawCSV, 'belts_raw_data_export.csv');
                 }
 
-                // 6. 로그아웃 (페이지 새로고침)
-                setTimeout(() => {
-                    location.reload();
-                }, 3000); // 500ms는 5개 파일 다운로드에 너무 짧으므로 3초로 늘림
+                // 6. (수정) 로그아웃(reload) 제거, 알림으로 대체
+                showAlertModal("CSV 파일 5개가 다운로드되었습니다. 다운로드 완료 후 '로그아웃' 버튼을 눌러주세요.");
 
             } catch (error) {
                 console.error("Error exporting data:", error);
@@ -2081,12 +1976,225 @@
         document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
         document.getElementById('user-login-form').addEventListener('submit', handleUserLogin);
 
-        // 로그아웃 버튼
-        document.getElementById('export-logout-btn').addEventListener('click', exportDataAndLogout);
+        // (수정) 로그아웃 버튼 -> 데이터 저장 버튼
+        document.getElementById('export-data-btn').addEventListener('click', exportData);
+        
+        // (신규) 로그아웃 버튼
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            location.reload();
+        });
 
         // 진척율 현황 대시보드 필터
         document.getElementById('progress-corp-filter').addEventListener('change', loadProgressDashboard);
         document.getElementById('progress-type-filter').addEventListener('change', loadProgressDashboard);
+        
+        // (신규) 벨트 상세 필터
+        document.getElementById('belt-detail-corp-filter').addEventListener('change', loadBeltDetailsTable);
+        document.getElementById('belt-detail-grade-filter').addEventListener('change', loadBeltDetailsTable);
+
+        // (수정) CSV 버튼 - null 체크 추가
+        const downloadCsvBtn = document.getElementById('download-csv-btn');
+        if (downloadCsvBtn) {
+            downloadCsvBtn.addEventListener('click', () => {
+                const headers = [
+                    "corporation", "department", "team", "name", "leader", "members",
+                    "kickoff", "type", "status",
+                    "dmaic_d", "dmaic_m", "dmaic_a", "dmaic_i", "dmaic_c",
+                    "score_potential", "score_strategy", "score_effect", 
+                    "score_ripple", "score_feasibility", "score_urgency"
+                ];
+                
+                const exampleData = [
+                    "ATEC", "경영기획", "기획팀", "본사 프로세스 개선", "김본사", "이경영,박기획",
+                    "2025-04-01", "6σ", "분석",
+                    "1.0", "1.0", "0.5", "0", "0",
+                    "9", "18", "9", "9", "9", "9"
+                ].map(escapeCSVField); // 예시 데이터도 이스케이프 처리
+                
+                let csvContent = "\uFEFF"; 
+                csvContent += headers.join(",") + "\n";
+                csvContent += exampleData.join(",") + "\n";
+
+                triggerCSVDownload(csvContent, "projects_template.csv");
+            });
+        }
+        
+        const uploadCsvBtn = document.getElementById('upload-csv-btn');
+        if (uploadCsvBtn) {
+            uploadCsvBtn.addEventListener('click', () => {
+                document.getElementById('csv-upload-input').click();
+            });
+        }
+
+        const csvUploadInput = document.getElementById('csv-upload-input');
+        if (csvUploadInput) {
+            csvUploadInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    parseCSV(file);
+                }
+                event.target.value = null;
+            });
+        }
+        
+        // (수정) 시뮬레이션 버튼 - null 체크 추가
+        const runSimulationBtn = document.getElementById('run-simulation-btn');
+        if (runSimulationBtn) {
+            runSimulationBtn.addEventListener('click', async () => {
+                if (currentUserRole !== 'admin') {
+                    showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
+                    return;
+                }
+                try {
+                    const batch = writeBatch(db);
+                    
+                    const corporations = ["ATEC", "ATEC SYSTEM", "ATEC COMPUTER", "ATEC MOBILITY", "ATEC C&", "ATEC auto"];
+                    const types = ["6σ", "6S", "R&D", "AI"];
+                    const statuses = ["미실행", "정의", "측정", "분석", "개선", "관리", "완료"];
+                    const leaders = ["김철수", "이영희", "박갑동", "최정민", "한유진"];
+                    
+                    // 1. 가상 과제 20개 생성
+                    for (let i = 0; i < 20; i++) {
+                        const docRef = doc(getProjectsCol());
+                        
+                        const status = statuses[Math.floor(Math.random() * statuses.length)];
+                        const dmaic = generateHierarchicalDMAIC(status);
+
+                        const scores = [
+                            [1,3,9][Math.floor(Math.random() * 3)],
+                            [1,6,18][Math.floor(Math.random() * 3)],
+                            [1,3,9][Math.floor(Math.random() * 3)],
+                            [1,3,9][Math.floor(Math.random() * 3)],
+                            [1,3,9][Math.floor(Math.random() * 3)],
+                            [1,3,9][Math.floor(Math.random() * 3)]
+                        ];
+                        const totalScore = scores.reduce((sum, val) => sum + val, 0);
+                        const month = Math.floor(Math.random() * 12) + 1; // 1-12월
+
+                        const project = {
+                            corporation: corporations[Math.floor(Math.random() * corporations.length)],
+                            team: `테스트팀 ${i+1}`,
+                            name: `가상 프로젝트 ${i+1}`,
+                            leader: leaders[Math.floor(Math.random() * leaders.length)],
+                            kickoff: `2025-${String(month).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
+                            type: types[Math.floor(Math.random() * types.length)],
+                            status: status,
+                            dmaic_d: dmaic.d,
+                            dmaic_m: dmaic.m,
+                            dmaic_a: dmaic.a,
+                            dmaic_i: dmaic.i,
+                            dmaic_c: dmaic.c,
+                            score_potential: scores[0],
+                            score_strategy: scores[1],
+                            score_effect: scores[2],
+                            score_ripple: scores[3],
+                            score_feasibility: scores[4],
+                            score_urgency: scores[5],
+                            score_total: totalScore,
+                            grade: calculateGrade(totalScore)
+                        };
+                        batch.set(docRef, project);
+                    }
+
+                    // 2. 가상 벨트 인원 30명 생성
+                    const grades = ["MBB", "BB", "GB", "AI"];
+                    const names = ["김MBB", "이BB", "박GB", "최AI", "정아무개", "윤테스트", "한시뮬"];
+                    
+                    for (let i = 0; i < 30; i++) {
+                        const docRef = doc(getBeltsCol());
+                        const belt = {
+                            corporation: corporations[Math.floor(Math.random() * corporations.length)],
+                            name: `${names[Math.floor(Math.random() * names.length)]} ${i+1}`,
+                            grade: grades[Math.floor(Math.random() * grades.length)],
+                        };
+                        batch.set(docRef, belt);
+                    }
+
+                    await batch.commit();
+                    showAlertModal("시뮬레이션 데이터 20개 과제, 30명 인원이 생성되었습니다.");
+
+                } catch (error) {
+                    console.error("Simulation data creation error:", error);
+                    showAlertModal(`데이터 생성 중 오류 발생: ${error.message}`);
+                }
+            });
+        }
+        
+        const deleteAllBtn = document.getElementById('delete-all-btn');
+        if (deleteAllBtn) {
+            deleteAllBtn.addEventListener('click', async () => {
+                if (currentUserRole !== 'admin') {
+                    showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
+                    return;
+                }
+                try {
+                    const batch = writeBatch(db);
+                    
+                    // 관리자는 전체 삭제
+                    if (currentUserRole === 'admin') {
+                        const projectsSnapshot = await getDocs(getProjectsCol());
+                        projectsSnapshot.forEach(doc => {
+                            batch.delete(doc.ref);
+                        });
+                        
+                        const beltsSnapshot = await getDocs(getBeltsCol());
+                        beltsSnapshot.forEach(doc => {
+                            batch.delete(doc.ref);
+                        });
+
+                        await batch.commit();
+                        showAlertModal("모든 데이터가 삭제되었습니다.");
+                    } else {
+                         showAlertModal("이 기능은 관리자만 사용할 수 있습니다.");
+                    }
+
+                } catch (error) {
+                    console.error("Simulation data deletion error:", error);
+                    showAlertModal(`데이터 삭제 중 오류 발생: ${error.message}`);
+                }
+            });
+        }
+        
+        // (수정) 신규 과제 모달 버튼 - null 체크 추가
+        const newProjectBtn = document.getElementById('new-project-btn');
+        if (newProjectBtn) {
+            newProjectBtn.addEventListener('click', () => {
+                document.getElementById('project-form').reset(); 
+                document.getElementById('project-id').value = '';
+                document.getElementById('project-modal-title').textContent = '신규 과제 등록';
+                
+                // 담당자 모드일 경우 법인명 자동 선택 및 고정
+                if (currentUserRole === 'user') {
+                    document.getElementById('project-corporation').value = currentUserCorporation;
+                    document.getElementById('project-corporation').disabled = true;
+                } else {
+                    document.getElementById('project-corporation').disabled = false;
+                }
+
+                toggleValiditySection(); 
+                openModal('project-modal');
+            });
+        }
+        
+        // (수정) 신규 벨트 모달 버튼 - null 체크 추가
+        const newBeltBtn = document.getElementById('new-belt-btn');
+        if (newBeltBtn) {
+            newBeltBtn.addEventListener('click', () => {
+                document.getElementById('belt-form').reset();
+                document.getElementById('belt-id').value = '';
+                
+                // 담당자 모드일 경우 법인명 자동 선택 및 고정
+                if (currentUserRole === 'user') {
+                    document.getElementById('belt-corporation').value = currentUserCorporation;
+                    document.getElementById('belt-corporation').disabled = true;
+                } else {
+                    document.getElementById('belt-corporation').disabled = false;
+                }
+                
+                openModal('belt-modal');
+            });
+        }
+
 
         window.closeModal = closeModal;
         window.closeModalFromButton = closeModalFromButton;
@@ -2094,5 +2202,3 @@
     </script>
 </body>
 </html>
-
-
